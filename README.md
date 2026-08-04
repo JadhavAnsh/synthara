@@ -65,7 +65,6 @@ npm run lint
 ```
 
 
-
 ## Documentation
 
 - [Project overview](./docs/overview.md)
@@ -73,4 +72,3 @@ npm run lint
 - [Implementation plan](./docs/implementation-plan.md)
 - [AI provider setup](./docs/ai-provider.md)
 - [Contentstack CMS setup](./docs/contentstack-cms.md)
-
