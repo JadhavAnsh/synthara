@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Synthara
+
+Synthara is an AI research assistant SaaS for discovering sources, drafting structured research documents, and managing citations from one workspace.
+
+The product direction is a dual-pane interface: a document editor on the left and an AI research assistant on the right. The assistant helps users search web, academic, and code sources, summarize selected evidence, draft document sections, and keep citation metadata ready for export.
+
+## Current Stack
+
+- **App framework:** Next.js App Router, React, TypeScript
+- **Styling:** Tailwind CSS with shadcn/ui components
+- **AI provider for development:** Google Gemini Developer API
+- **CMS:** Contentstack Delivery API
+- **Planned data layer:** PostgreSQL with pgvector for metadata and semantic retrieval
+- **Planned realtime layer:** Yjs or a managed CRDT service for collaborative document editing
+- **Planned queues/cache:** Redis and BullMQ for search fan-out, retries, and rate-limit handling
+
+## Free AI API Provider
+
+This project is configured for Google Gemini because the Gemini Developer API has a free tier suitable for development and prototypes. Use it for local development, demos, source summarization, outline generation, and drafting experiments. For production, revisit limits, billing, privacy terms, and model choice.
+
+1. Go to [Google AI Studio](https://aistudio.google.com/app/apikey).
+2. Create an API key.
+3. Copy `.env.example` to `.env.local`.
+4. Add the key:
+
+```bash
+GEMINI_API_KEY=your_google_ai_studio_key
+GEMINI_MODEL=gemini-2.5-flash
+```
+
+The server route at `app/api/ai/route.ts` calls Gemini through `lib/ai/gemini.ts`. Keep `GEMINI_API_KEY` server-only; do not prefix it with `NEXT_PUBLIC_`.
+
+## Contentstack CMS
+
+Use Contentstack for editable marketing pages, help articles, release notes, landing-page copy, research templates, and citation-style guidance.
+
+Required local values:
+
+```bash
+CONTENTSTACK_API_KEY=
+CONTENTSTACK_DELIVERY_TOKEN=
+CONTENTSTACK_ENVIRONMENT=development
+CONTENTSTACK_REGION=us
+CONTENTSTACK_DEFAULT_LOCALE=en-us
+```
+
+Copy `CONTENTSTACK_API_KEY`, `CONTENTSTACK_DELIVERY_TOKEN`, and the environment name from your Contentstack stack. The helper in `lib/cms/contentstack.ts` reads published entries through the Content Delivery API.
 
 ## Getting Started
 
-First, run the development server:
+```bash
+npm install
+cp .env.example .env.local
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+## Useful Commands
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run build
+npm run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Documentation
 
-## Learn More
+- [Project overview](./docs/overview.md)
+- [Architecture](./docs/architecture.md)
+- [Implementation plan](./docs/implementation-plan.md)
+- [AI provider setup](./docs/ai-provider.md)
+- [Contentstack CMS setup](./docs/contentstack-cms.md)
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
