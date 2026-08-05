@@ -23,6 +23,8 @@ Or use MongoDB Atlas and set `MONGODB_URI` to your cluster connection string.
 - `MONGODB_URI` points to a reachable MongoDB instance.
 - `BETTER_AUTH_SECRET` is a random 32+ character string.
 - `BETTER_AUTH_URL` and `NEXT_PUBLIC_APP_URL` match your local dev URL.
+- Contentstack Launch / preview hosts (`*.contentstackapps.com`) are allowed automatically for auth origin checks.
+- Add `BETTER_AUTH_ALLOWED_HOSTS` if you deploy to a custom domain.
 - `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set if you want Google OAuth.
 - `RESEND_API_KEY` and `RESEND_FROM_EMAIL` are set for outbound email.
 - `GEMINI_API_KEY` is present for `/api/ai`.

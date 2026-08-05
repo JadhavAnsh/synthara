@@ -3,6 +3,7 @@ import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { nextCookies } from "better-auth/next-js";
 import { MongoClient } from "mongodb";
 
+import { getAuthBaseUrl } from "@/lib/auth/config";
 import { sendVerificationEmailMessage } from "@/lib/email/messages/verification";
 import { validateEmailAddress } from "@/lib/email/validate";
 
@@ -15,8 +16,11 @@ const googleClientId = process.env.GOOGLE_CLIENT_ID;
 const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
 export const auth = betterAuth({
-  baseURL: process.env.BETTER_AUTH_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+  baseURL: getAuthBaseUrl(),
   secret: process.env.BETTER_AUTH_SECRET ?? "development-secret-replace-in-production-32chars",
+  advanced: {
+    trustedProxyHeaders: true,
+  },
   database: mongodbAdapter(db, {
     client,
     transaction: false,
