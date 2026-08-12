@@ -15,7 +15,13 @@ export default function VerifyEmailPage() {
         </Link>
       </header>
       <main className="flex flex-1 items-center justify-center px-6 py-12">
-        <Suspense fallback={<p className="text-sm text-muted-foreground">Loading...</p>}>
+        <Suspense
+          fallback={
+            <div className="w-full max-w-md rounded-xl border border-hairline bg-surface-card/70 p-8 text-center shadow-sm">
+              <p className="text-sm text-muted-soft">Loading...</p>
+            </div>
+          }
+        >
           <VerifyEmailPanel />
         </Suspense>
       </main>
