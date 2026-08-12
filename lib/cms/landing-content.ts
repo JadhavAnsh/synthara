@@ -10,7 +10,6 @@ export type LandingWorkflowStep = {
 
 export type LandingPageContent = {
   hero: {
-    eyebrow: string;
     headline: string;
     body: string;
     primaryCtaLabel: string;
@@ -19,24 +18,17 @@ export type LandingPageContent = {
     secondaryCtaHref: string;
   };
   features: {
-    eyebrow: string;
     headline: string;
     items: LandingFeature[];
   };
   workflow: {
-    eyebrow: string;
     headline: string;
     steps: LandingWorkflowStep[];
   };
-  productPreview: {
-    eyebrow: string;
-    headline: string;
-    body: string;
-  };
   workspace: {
-    eyebrow: string;
     headline: string;
     body: string;
+    highlights: string[];
   };
   cta: {
     headline: string;
@@ -48,7 +40,6 @@ export type LandingPageContent = {
 
 export const defaultLandingContent: LandingPageContent = {
   hero: {
-    eyebrow: "AI research assistant",
     headline: "Research discovery, drafting, and citations in one workspace.",
     body:
       "Synthara pairs source discovery with an AI-assisted editor. Search credible references, draft with evidence-aware suggestions, and keep citation metadata attached from outline to export.",
@@ -58,7 +49,6 @@ export const defaultLandingContent: LandingPageContent = {
     secondaryCtaHref: "/sign-in",
   },
   features: {
-    eyebrow: "Why Synthara",
     headline: "Built for evidence-first research",
     items: [
       {
@@ -69,7 +59,7 @@ export const defaultLandingContent: LandingPageContent = {
       {
         title: "Honest AI drafting",
         description:
-          "Draft sections with a Gemini-backed assistant that flags missing evidence instead of inventing claims. Stay credible through every revision.",
+          "Draft sections with an assistant that flags missing evidence instead of inventing claims. Stay credible through every revision.",
       },
       {
         title: "Citations that follow the doc",
@@ -79,7 +69,6 @@ export const defaultLandingContent: LandingPageContent = {
     ],
   },
   workflow: {
-    eyebrow: "Product flow",
     headline: "From question to cited document",
     steps: [
       {
@@ -104,22 +93,20 @@ export const defaultLandingContent: LandingPageContent = {
       },
     ],
   },
-  productPreview: {
-    eyebrow: "Workspace",
-    headline: "Dual-pane research, one continuous flow",
-    body:
-      "Sources on the left, your document on the right. Every paragraph stays tied to the evidence behind it so you can audit claims before you ship.",
-  },
   workspace: {
-    eyebrow: "Workspace",
     headline: "Sources and drafting, side by side",
     body:
-      "The double-pane workspace keeps discovery on the left and your document on the right — with citations that stay attached from outline to export.",
+      "The dual-pane workspace keeps discovery on the left and your document on the right. Every claim stays tied to its source — with missing evidence surfaced before you export.",
+    highlights: [
+      "IEEE and Harvard export styles",
+      "Missing-evidence flags inline",
+      "Source metadata stays linked",
+    ],
   },
   cta: {
     headline: "Start your first research project",
-    body: "Create an account, verify your email, and open a project in minutes. No credit card required for development.",
-    ctaLabel: "Create free account",
+    body: "Create an account, verify your email, and open a project in minutes. No credit card required.",
+    ctaLabel: "Get started free",
     ctaHref: "/sign-up",
   },
 };

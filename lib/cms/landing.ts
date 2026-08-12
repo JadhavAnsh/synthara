@@ -5,7 +5,6 @@ import {
 } from "@/lib/cms/landing-content";
 
 type LandingPageEntry = {
-  hero_eyebrow?: string;
   hero_headline?: string;
   hero_body?: string;
   primary_cta_label?: string;
@@ -26,9 +25,6 @@ export async function getLandingPageContent(): Promise<LandingPageContent> {
 
     const entry = entries[0];
 
-    if (entry.hero_eyebrow) {
-      content.hero.eyebrow = entry.hero_eyebrow;
-    }
     if (entry.hero_headline) {
       content.hero.headline = entry.hero_headline;
     }

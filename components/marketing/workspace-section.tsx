@@ -1,6 +1,4 @@
-import { DualPane } from "@/components/marketing/dual-pane";
 import {
-  HoverLift,
   Reveal,
 } from "@/components/marketing/motion-primitives";
 import { WorkspaceMockup } from "@/components/marketing/workspace-mockup";
@@ -12,21 +10,33 @@ type WorkspaceSectionProps = {
 
 export function WorkspaceSection({ content }: WorkspaceSectionProps) {
   return (
-    <section id="workspace" className="border-b border-hairline bg-surface-soft">
-      <div className="mx-auto w-full max-w-6xl px-6 py-16 sm:px-10 sm:py-24 lg:px-12">
-        <Reveal className="max-w-2xl">
-          <p className="text-sm font-medium text-primary">{content.eyebrow}</p>
-          <h2 className="mt-3 font-[family-name:var(--font-display)] text-3xl tracking-tight text-ink sm:text-4xl">
-            {content.headline}
-          </h2>
-          <p className="mt-5 max-w-lg leading-8 text-body">{content.body}</p>
-        </Reveal>
+    <section id="workspace" className="border-b border-hairline bg-surface-card">
+      <div className="mx-auto w-full max-w-6xl px-6 py-24 sm:px-10 lg:px-12">
+        <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
+          <Reveal>
+            <h2 className="font-[family-name:var(--font-display)] text-3xl tracking-tight text-ink sm:text-4xl">
+              {content.headline}
+            </h2>
+            <p className="mt-5 max-w-lg leading-8 text-body">{content.body}</p>
+            <ul className="mt-8 space-y-3">
+              {content.highlights.map((highlight) => (
+                <li key={highlight} className="flex items-start gap-3 text-sm text-body-strong">
+                  <span
+                    aria-hidden
+                    className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary"
+                  />
+                  {highlight}
+                </li>
+              ))}
+            </ul>
+          </Reveal>
 
-        <Reveal className="mt-10" delay={0.08}>
-          <HoverLift className="overflow-hidden rounded-lg border border-white/10 bg-surface-dark">
-            <WorkspaceMockup />
-          </HoverLift>
-        </Reveal>
+          <Reveal delay={0.08}>
+            <div className="overflow-hidden rounded-lg border border-white/10 bg-surface-dark">
+              <WorkspaceMockup />
+            </div>
+          </Reveal>
+        </div>
       </div>
     </section>
   );

@@ -3,9 +3,21 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Menu01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 
-import { authClient } from "@/lib/auth-client";
+import { SyntharaMark } from "@/components/brand/synthara-mark";
+import { marketingNavLinks } from "@/components/marketing/marketing-nav-links";
 import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { useAuthStore, selectIsAuthenticated } from "@/stores/auth-store";
 
@@ -18,13 +30,12 @@ export function TopNav({ className, variant = "marketing" }: TopNavProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [hasMounted, setHasMounted] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const status = useAuthStore((state) => state.status);
   const isAuthenticated = useAuthStore(selectIsAuthenticated);
 
   useEffect(() => {
-    setTimeout(() => {
-      setHasMounted(true);
-    }, 100);
+    setHasMounted(true);
   }, []);
 
   async function handleSignOut() {
@@ -35,6 +46,8 @@ export function TopNav({ className, variant = "marketing" }: TopNavProps) {
   }
 
   const isProjectsRoute = pathname === "/projects" || pathname.startsWith("/projects/");
+  const showAuthenticated =
+    hasMounted && status !== "loading" && isAuthenticated;
 
   return (
     <header
@@ -43,30 +56,28 @@ export function TopNav({ className, variant = "marketing" }: TopNavProps) {
         className,
       )}
     >
-      <div className="mx-auto flex h-full max-w-6xl items-center justify-between px-6 sm:px-10 lg:px-12">
-        <Link href="/" className="flex items-center gap-2.5">
-          <span className="size-2 rounded-full bg-primary" aria-hidden />
-          <span className="font-[family-name:var(--font-display)] text-xl tracking-tight text-ink">
+      <div className="mx-auto flex h-full max-w-6xl items-center justify-between gap-3 px-6 sm:px-10 lg:px-12">
+        <Link href="/" className="flex min-w-0 items-center gap-2.5">
+          <SyntharaMark size="sm" />
+          <span className="truncate font-[family-name:var(--font-display)] text-xl tracking-tight text-ink">
             Synthara
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-8 text-sm font-medium sm:flex">
+        <nav
+          aria-label="Primary"
+          className="hidden items-center gap-8 text-sm font-medium sm:flex"
+        >
           {variant === "marketing" ? (
-            <>
-              <Link href="#overview" className="text-body transition-colors hover:text-ink">
-                Overview
+            marketingNavLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-body transition-colors hover:text-ink"
+              >
+                {link.label}
               </Link>
-              <Link href="#features" className="text-body transition-colors hover:text-ink">
-                Features
-              </Link>
-              <Link href="#workflow" className="text-body transition-colors hover:text-ink">
-                Workflow
-              </Link>
-              <Link href="#workspace" className="text-body transition-colors hover:text-ink">
-                Workspace
-              </Link>
-            </>
+            ))
           ) : (
             <Link
               href="/projects"
@@ -88,9 +99,50 @@ export function TopNav({ className, variant = "marketing" }: TopNavProps) {
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          {!hasMounted || status === "loading" ? (
-            <span className="text-xs text-muted-soft">Loading…</span>
-          ) : isAuthenticated ? (
+          {variant === "marketing" ? (
+            <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+              <SheetTrigger
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    className="text-body hover:bg-surface-soft hover:text-ink sm:hidden"
+                    aria-label="Open menu"
+                  />
+                }
+              >
+                <HugeiconsIcon icon={Menu01Icon} strokeWidth={2} />
+              </SheetTrigger>
+              <SheetContent
+                side="left"
+                className="w-[min(100%,20rem)] border-hairline bg-canvas p-0 text-ink"
+              >
+                <SheetHeader className="border-b border-hairline px-6 py-5">
+                  <SheetTitle className="flex items-center gap-2 font-[family-name:var(--font-display)] text-lg font-normal text-ink">
+                    <SyntharaMark size="sm" />
+                    Synthara
+                  </SheetTitle>
+                </SheetHeader>
+                <nav aria-label="Mobile" className="flex flex-col px-3 py-4">
+                  {marketingNavLinks.map((link) => (
+                    <SheetClose
+                      key={link.href}
+                      render={
+                        <Link
+                          href={link.href}
+                          className="rounded-md px-3 py-3 text-base font-medium text-body transition-colors hover:bg-surface-soft hover:text-ink"
+                        />
+                      }
+                    >
+                      {link.label}
+                    </SheetClose>
+                  ))}
+                </nav>
+              </SheetContent>
+            </Sheet>
+          ) : null}
+
+          {showAuthenticated ? (
             <>
               {variant === "app" ? (
                 <Button
@@ -125,7 +177,9 @@ export function TopNav({ className, variant = "marketing" }: TopNavProps) {
               >
                 Sign in
               </Button>
-              <Button render={<Link href="/sign-up" />}>Get started</Button>
+              <Button size="sm" render={<Link href="/sign-up" />}>
+                Get started free
+              </Button>
             </>
           )}
         </div>
