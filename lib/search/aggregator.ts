@@ -1,8 +1,10 @@
+import { logInfo, logWarn } from "@/lib/logger";
+import { getPartialCachedResults, setCachedChannelResults } from "@/lib/search/cache";
 import { DEFAULT_SEARCH_TIMEOUT_MS } from "@/lib/search/config";
-import { getCachedSearchResult, setCachedSearchResult } from "@/lib/search/cache";
 import { mapSearchError } from "@/lib/search/errors";
+import { mergeChannelResults } from "@/lib/search/merge";
 import { normalizeSources } from "@/lib/search/normalize";
-import { enqueueSearchJob } from "@/lib/search/queue";
+import { enqueueSearchJob, processPendingSearchJobs } from "@/lib/search/queue";
 import { getSearchProvider } from "@/lib/search/providers";
 import {
   SEARCH_CHANNELS,
@@ -28,6 +30,14 @@ function resolveChannels(channels?: SearchChannel[]) {
   return [...new Set(channels)];
 }
 
+function shouldEnqueueRetry(result: ChannelSearchResult) {
+  return (
+    result.status === "timeout" ||
+    result.status === "rate_limited" ||
+    result.status === "error"
+  );
+}
+
 async function searchChannel(
   channel: SearchChannel,
   query: string,
@@ -47,6 +57,12 @@ async function searchChannel(
     };
   } catch (error) {
     const mapped = mapSearchError(error);
+    logWarn("search", "channel.failed", {
+      channel,
+      status: mapped.status,
+      message: mapped.message,
+    });
+
     return {
       channel,
       status: mapped.status,
@@ -56,51 +72,95 @@ async function searchChannel(
   }
 }
 
+async function enqueueFailedChannels(
+  projectId: string,
+  query: string,
+  channels: SearchChannel[],
+  channelResults: ChannelSearchResult[],
+) {
+  for (const result of channelResults) {
+    if (!shouldEnqueueRetry(result)) {
+      continue;
+    }
+
+    void enqueueSearchJob({
+      projectId,
+      query,
+      channels,
+      channel: result.channel,
+      error: result.error || `${result.channel} search failed`,
+    });
+  }
+}
+
 async function runAggregateSearch(input: AggregateSearchInput): Promise<AggregatedSearchResult> {
   const query = input.query.trim().slice(0, 200);
   const channels = resolveChannels(input.channels);
-
-  if (!input.skipCache) {
-    const cached = await getCachedSearchResult(query, channels);
-    if (cached) {
-      return cached;
-    }
-  }
-
-  const channelResults = await Promise.all(channels.map((channel) => searchChannel(channel, query)));
+  let recoveredFromQueue = false;
 
   if (input.projectId) {
-    for (const result of channelResults) {
-      if (
-        result.status === "timeout" ||
-        result.status === "rate_limited" ||
-        result.status === "error"
-      ) {
-        void enqueueSearchJob({
-          projectId: input.projectId,
-          query,
-          channel: result.channel,
-          error: result.error || `${result.channel} search failed`,
-        });
-      }
+    const recovered = await processPendingSearchJobs(input.projectId);
+    recoveredFromQueue = recovered.length > 0;
+  }
+
+  let channelResults: ChannelSearchResult[] = [];
+  let servedFromCache = false;
+
+  if (!input.skipCache) {
+    const { cached, missing } = await getPartialCachedResults(query, channels);
+
+    if (missing.length === 0) {
+      logInfo("search", "aggregate.cache_hit", { query, channelCount: channels.length });
+      return {
+        query,
+        cached: true,
+        channels: mergeChannelResults([], cached, channels),
+        recoveredFromQueue,
+      };
+    }
+
+    if (cached.length > 0) {
+      servedFromCache = true;
+      logInfo("search", "aggregate.partial_cache_hit", {
+        query,
+        cachedChannels: cached.map((result) => result.channel),
+        missingChannels: missing,
+      });
+    }
+
+    const freshResults = await Promise.all(missing.map((channel) => searchChannel(channel, query)));
+    channelResults = mergeChannelResults(cached, freshResults, channels);
+
+    const freshSuccesses = freshResults.filter(
+      (result) => result.status === "success" && result.results.length > 0,
+    );
+
+    if (freshSuccesses.length > 0) {
+      void setCachedChannelResults(query, freshSuccesses);
+    }
+  } else {
+    logInfo("search", "aggregate.skip_cache", { query, channels });
+    channelResults = await Promise.all(channels.map((channel) => searchChannel(channel, query)));
+
+    const successes = channelResults.filter(
+      (result) => result.status === "success" && result.results.length > 0,
+    );
+
+    if (successes.length > 0) {
+      void setCachedChannelResults(query, successes);
     }
   }
 
-  const response = {
-    query,
-    cached: false,
-    channels: channelResults,
-  };
-
-  const hasSuccessfulResults = channelResults.some(
-    (channel) => channel.status === "success" && channel.results.length > 0,
-  );
-
-  if (hasSuccessfulResults) {
-    void setCachedSearchResult(query, channels, channelResults);
+  if (input.projectId) {
+    await enqueueFailedChannels(input.projectId, query, channels, channelResults);
   }
 
-  return response;
+  return {
+    query,
+    cached: servedFromCache && channelResults.every((result) => result.status !== "error"),
+    channels: channelResults,
+    recoveredFromQueue,
+  };
 }
 
 export async function aggregateSearch(input: AggregateSearchInput): Promise<AggregatedSearchResult> {

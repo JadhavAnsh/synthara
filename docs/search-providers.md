@@ -26,8 +26,10 @@ These academic providers run without API keys:
 ## Rate limits and retries
 
 - Each channel uses a 10 second timeout.
-- Failed, timed out, or rate-limited channels enqueue a MongoDB retry job for that project.
-- Successful multi-channel searches are cached for 24 hours in MongoDB.
+- Failed, timed out, or rate-limited channels enqueue a MongoDB retry job for that project (deduplicated per channel).
+- Pending jobs are processed at the start of the next search for that project; recovered results are written to per-channel cache.
+- Successful channel searches are cached for 24 hours in MongoDB (per channel, enabling partial cache hits after retries).
+- Search API requests are limited to 30 per user per hour.
 - A future Redis/BullMQ worker can replace the inline retry processor without changing API contracts.
 
 ## Local setup

@@ -10,6 +10,7 @@ export const searchRequestSchema = z.object({
     .max(200, "Search query must be at most 200 characters")
     .optional(),
   channels: z.array(z.enum(SEARCH_CHANNELS)).optional(),
+  skipCache: z.boolean().optional(),
 });
 
 export type SearchRequestInput = z.infer<typeof searchRequestSchema>;

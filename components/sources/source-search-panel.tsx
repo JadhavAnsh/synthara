@@ -56,14 +56,14 @@ export function SourceSearchPanel({
   const activeResult = channelResults[SEARCH_CHANNELS.indexOf(activeChannel)];
 
   const runSearch = useCallback(
-    async (searchQuery: string) => {
+    async (searchQuery: string, options?: { skipCache?: boolean }) => {
       const trimmed = searchQuery.trim();
       if (trimmed.length < 3) {
         return;
       }
 
       setHasSearched(true);
-      await mutateAsync({ query: trimmed });
+      await mutateAsync({ query: trimmed, skipCache: options?.skipCache });
     },
     [mutateAsync],
   );
@@ -126,7 +126,7 @@ export function SourceSearchPanel({
               savedExternalIds={savedExternalIds}
               savingExternalId={savingExternalId}
               onAdd={(source) => void handleAdd(source)}
-              onRetry={() => void runSearch(query)}
+              onRetry={() => void runSearch(query, { skipCache: true })}
             />
           </div>
         ) : null}

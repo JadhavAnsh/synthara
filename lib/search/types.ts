@@ -48,4 +48,5 @@ export type AggregatedSearchResult = {
   query: string;
   cached: boolean;
   channels: ChannelSearchResult[];
+  recoveredFromQueue?: boolean;
 };

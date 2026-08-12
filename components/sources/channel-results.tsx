@@ -83,7 +83,10 @@ export function ChannelResults({
             animate={{ opacity: 1, y: 0 }}
             className="rounded-xl border border-hairline bg-surface-soft px-6 py-6"
           >
-            <p className="text-sm text-body">Search timed out. Retry queued in background.</p>
+            <p className="text-sm text-body">
+              This channel timed out. A background retry is scheduled — use Retry now to search again
+              immediately.
+            </p>
             {onRetry ? (
               <Button type="button" variant="outline" size="sm" className="mt-4" onClick={onRetry}>
                 Retry now
@@ -97,7 +100,15 @@ export function ChannelResults({
             animate={{ opacity: 1, y: 0 }}
             className="rounded-xl border border-hairline bg-surface-soft px-6 py-6"
           >
-            <p className="text-sm text-body">Rate limit hit. Retry queued automatically.</p>
+            <p className="text-sm text-body">
+              This provider is rate limited. We&apos;ll retry in the background, or use Retry now to
+              force a fresh search.
+            </p>
+            {onRetry ? (
+              <Button type="button" variant="outline" size="sm" className="mt-4" onClick={onRetry}>
+                Retry now
+              </Button>
+            ) : null}
             {result.error ? <p className="mt-2 text-xs text-muted-foreground">{result.error}</p> : null}
           </motion.div>
         ) : result.status === "error" ? (

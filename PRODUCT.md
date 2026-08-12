@@ -39,9 +39,9 @@ Marketing pages, help articles, release notes, and research templates are intend
 - Export to Markdown, DOCX, and PDF.
 - Server-only integration boundaries for AI keys, CMS tokens, search keys, and database credentials.
 
-**Current foundation (implemented):** Next.js App Router shell, Gemini-backed AI API route (`app/api/ai/route.ts`), Contentstack Delivery API helper (`lib/cms/contentstack.ts`), planning documentation under `docs/`.
+**Current foundation (implemented):** Next.js App Router shell, auth and accounts, MongoDB project/source schema, multi-channel search aggregation (web, academic, GitHub) with per-channel cache and retry queue, Gemini-backed AI API route (`app/api/ai/route.ts`), Contentstack Delivery API helper (`lib/cms/contentstack.ts`), planning documentation under `docs/`.
 
-**Planned but not yet built:** Auth and accounts, PostgreSQL with pgvector, Redis/BullMQ queues, Yjs or managed CRDT for collaborative editing, full search aggregation, Tiptap/ProseMirror editor, citation chips, streaming assistant UI, export engine, beta billing.
+**Planned but not yet built:** PostgreSQL with pgvector, Redis/BullMQ workers, Yjs or managed CRDT for collaborative editing, Tiptap/ProseMirror editor, citation chips, streaming assistant UI, export engine, beta billing.
 
 **Explicitly undecided:** Production AI provider, deployment target, pricing/licensing, auth provider selection, privacy and data-retention policy for uploaded sources, realtime collaboration scope for MVP.
 

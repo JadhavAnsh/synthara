@@ -48,6 +48,7 @@ export function SearchResultsSummary({ result }: SearchResultsSummaryProps) {
       <p className="text-sm text-body">
         <span className="font-medium text-ink">{totalResults}</span> sources for &ldquo;{result.query}&rdquo;
         {result.cached ? " · cached" : null}
+        {result.recoveredFromQueue ? " · background retry applied" : null}
       </p>
       <div className="flex flex-wrap gap-2">
         {result.channels.map((channel) => (

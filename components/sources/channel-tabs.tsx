@@ -24,22 +24,22 @@ type ChannelTabsProps = {
 
 function tabMeta(result: ChannelSearchResult | undefined, isLoading: boolean) {
   if (isLoading) {
-    return { label: "…", tone: "text-muted-foreground" as const };
+    return { label: "…", tone: "text-muted-foreground" as const, pulse: true };
   }
 
   if (!result) {
-    return { label: "—", tone: "text-muted-foreground" as const };
+    return { label: "—", tone: "text-muted-foreground" as const, pulse: false };
   }
 
   if (result.status === "success") {
-    return { label: String(result.results.length), tone: "text-ink" as const };
+    return { label: String(result.results.length), tone: "text-ink" as const, pulse: false };
   }
 
   if (result.status === "empty") {
-    return { label: "0", tone: "text-muted-foreground" as const };
+    return { label: "0", tone: "text-muted-foreground" as const, pulse: false };
   }
 
-  return { label: "!", tone: "text-destructive" as const };
+  return { label: "!", tone: "text-destructive" as const, pulse: false };
 }
 
 export function ChannelTabs({
@@ -83,7 +83,15 @@ export function ChannelTabs({
             ) : null}
             <span className={cn("relative z-10 size-1.5 shrink-0 rounded-full", CHANNEL_ACCENT[channel])} />
             <span className="relative z-10">{CHANNEL_LABELS[channel]}</span>
-            <span className={cn("relative z-10 tabular-nums text-xs", meta.tone)}>{meta.label}</span>
+            {meta.pulse && !reduceMotion ? (
+              <motion.span
+                className="relative z-10 size-2 rounded-full bg-primary/70"
+                animate={{ opacity: [0.35, 1, 0.35] }}
+                transition={{ duration: 1.1, repeat: Infinity, ease: "easeInOut" }}
+              />
+            ) : (
+              <span className={cn("relative z-10 tabular-nums text-xs", meta.tone)}>{meta.label}</span>
+            )}
           </button>
         );
       })}
