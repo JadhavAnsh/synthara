@@ -7,6 +7,7 @@ import { Menu01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
 import { SyntharaMark } from "@/components/brand/synthara-mark";
+import { NavLinkMotion } from "@/components/marketing/motion-primitives";
 import { marketingNavLinks } from "@/components/marketing/marketing-nav-links";
 import { Button } from "@/components/ui/button";
 import {
@@ -70,13 +71,9 @@ export function TopNav({ className, variant = "marketing" }: TopNavProps) {
         >
           {variant === "marketing" ? (
             marketingNavLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-body transition-colors hover:text-ink"
-              >
+              <NavLinkMotion key={link.href} href={link.href}>
                 {link.label}
-              </Link>
+              </NavLinkMotion>
             ))
           ) : (
             <Link

@@ -1,6 +1,4 @@
-import {
-  Reveal,
-} from "@/components/marketing/motion-primitives";
+import { HighlightItem, Reveal } from "@/components/marketing/motion-primitives";
 import { WorkspaceMockup } from "@/components/marketing/workspace-mockup";
 import type { LandingPageContent } from "@/lib/cms/landing-content";
 
@@ -19,14 +17,10 @@ export function WorkspaceSection({ content }: WorkspaceSectionProps) {
             </h2>
             <p className="mt-5 max-w-lg leading-8 text-body">{content.body}</p>
             <ul className="mt-8 space-y-3">
-              {content.highlights.map((highlight) => (
-                <li key={highlight} className="flex items-start gap-3 text-sm text-body-strong">
-                  <span
-                    aria-hidden
-                    className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary"
-                  />
+              {content.highlights.map((highlight, index) => (
+                <HighlightItem key={highlight} index={index}>
                   {highlight}
-                </li>
+                </HighlightItem>
               ))}
             </ul>
           </Reveal>

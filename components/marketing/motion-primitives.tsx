@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   motion,
   useReducedMotion,
@@ -13,6 +14,7 @@ import { cn } from "@/lib/utils";
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
 const springSnappy = { type: "spring" as const, stiffness: 400, damping: 30 };
+const springSoft = { type: "spring" as const, stiffness: 320, damping: 28 };
 
 export const staggerContainer: Variants = {
   hidden: { opacity: 0 },
@@ -127,12 +129,107 @@ export function MotionPress({ children, className, ...props }: MotionPressProps)
   return (
     <motion.div
       className={className}
-      whileHover={reduceMotion ? undefined : { scale: 1.02 }}
-      whileTap={reduceMotion ? undefined : { scale: 0.96 }}
+      whileHover={reduceMotion ? undefined : { scale: 1.02, y: -1 }}
+      whileTap={reduceMotion ? undefined : { scale: 0.96, y: 0 }}
       transition={springSnappy}
       {...props}
     >
       {children}
     </motion.div>
+  );
+}
+
+type HoverCardProps = HTMLMotionProps<"div"> & {
+  children: ReactNode;
+};
+
+export function HoverCard({ children, className, ...props }: HoverCardProps) {
+  const reduceMotion = useReducedMotion();
+
+  return (
+    <motion.div
+      className={cn("h-full", className)}
+      whileHover={
+        reduceMotion
+          ? undefined
+          : {
+              y: -4,
+              boxShadow: "0 8px 24px rgba(20, 20, 19, 0.08)",
+            }
+      }
+      whileTap={reduceMotion ? undefined : { y: -1, scale: 0.995 }}
+      transition={springSoft}
+      {...props}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+type NavLinkMotionProps = {
+  href: string;
+  children: ReactNode;
+  className?: string;
+};
+
+export function NavLinkMotion({ href, children, className }: NavLinkMotionProps) {
+  const reduceMotion = useReducedMotion();
+
+  return (
+    <Link
+      href={href}
+      className={cn(
+        "group relative py-1 text-body transition-colors hover:text-ink",
+        className,
+      )}
+    >
+      {children}
+      <motion.span
+        aria-hidden
+        className="absolute inset-x-0 -bottom-0.5 h-0.5 origin-left rounded-full bg-primary"
+        initial={false}
+        animate={reduceMotion ? { scaleX: 1, opacity: 0 } : { scaleX: 0, opacity: 1 }}
+        whileHover={reduceMotion ? undefined : { scaleX: 1 }}
+        transition={{ duration: 0.22, ease: easeOut }}
+      />
+    </Link>
+  );
+}
+
+type HighlightItemProps = {
+  children: ReactNode;
+  index: number;
+};
+
+export function HighlightItem({ children, index }: HighlightItemProps) {
+  const reduceMotion = useReducedMotion();
+
+  return (
+    <motion.li
+      className="flex items-start gap-3 text-sm text-body-strong"
+      initial={reduceMotion ? false : { opacity: 0, x: -10 }}
+      whileInView={reduceMotion ? undefined : { opacity: 1, x: 0 }}
+      viewport={{ once: true, margin: "-24px" }}
+      transition={{
+        delay: index * 0.08,
+        duration: 0.3,
+        ease: easeOut,
+      }}
+    >
+      <motion.span
+        aria-hidden
+        className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary"
+        initial={reduceMotion ? false : { scale: 0 }}
+        whileInView={reduceMotion ? undefined : { scale: 1 }}
+        viewport={{ once: true, margin: "-24px" }}
+        transition={{
+          type: "spring",
+          stiffness: 500,
+          damping: 28,
+          delay: index * 0.08 + 0.04,
+        }}
+      />
+      {children}
+    </motion.li>
   );
 }

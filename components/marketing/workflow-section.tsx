@@ -1,8 +1,5 @@
-import {
-  Reveal,
-  Stagger,
-  StaggerChild,
-} from "@/components/marketing/motion-primitives";
+import { Reveal } from "@/components/marketing/motion-primitives";
+import { WorkflowStepCard } from "@/components/marketing/workflow-step-card";
 import type { LandingPageContent } from "@/lib/cms/landing-content";
 
 type WorkflowSectionProps = {
@@ -19,16 +16,16 @@ export function WorkflowSection({ content }: WorkflowSectionProps) {
           </h2>
         </Reveal>
 
-        <Stagger className="grid gap-4 sm:grid-cols-2">
-          {content.steps.map((step) => (
-            <StaggerChild key={step.title}>
-              <div className="h-full rounded-lg border border-hairline bg-canvas p-6">
-                <h3 className="font-medium text-ink">{step.title}</h3>
-                <p className="mt-2 leading-7 text-body">{step.description}</p>
-              </div>
-            </StaggerChild>
+        <div className="grid gap-4 sm:grid-cols-2">
+          {content.steps.map((step, index) => (
+            <WorkflowStepCard
+              key={step.title}
+              title={step.title}
+              description={step.description}
+              index={index}
+            />
           ))}
-        </Stagger>
+        </div>
       </div>
     </section>
   );
