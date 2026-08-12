@@ -44,8 +44,8 @@ export function CreateProjectForm() {
     setErrors({});
 
     try {
-      await createProject.mutateAsync(parsed.data);
-      router.push("/projects");
+      const project = await createProject.mutateAsync(parsed.data);
+      router.push(`/projects/${project.id}?search=1`);
       router.refresh();
     } catch (error) {
       if (error instanceof ApiError) {
