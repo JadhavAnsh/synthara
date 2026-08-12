@@ -1,4 +1,5 @@
 import { generateResearchAssistantReply, type GeminiMessage } from "@/lib/ai/gemini";
+import { requireVerifiedApiSession } from "@/lib/auth/session";
 
 export const runtime = "nodejs";
 
@@ -8,6 +9,11 @@ type AiRequestBody = {
 
 export async function POST(request: Request) {
   try {
+    const authResult = await requireVerifiedApiSession();
+    if ("response" in authResult) {
+      return authResult.response;
+    }
+
     const body = (await request.json()) as AiRequestBody;
     const messages = body.messages?.filter((message) => message.text?.trim());
 

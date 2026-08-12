@@ -1,7 +1,7 @@
 ---
 version: alpha
-name: Claude-design-analysis
-description: A warm-canvas editorial interface for Anthropic's Claude product. The system anchors on a tinted cream canvas with serif display headlines, warm coral CTAs, and dark navy product surfaces (code editor mockups, model showcase cards). Brand voltage comes from the cream/coral pairing — deliberately warm and humanist where most AI brands use cool blue + slate. Type voice runs a slab-serif display ("Copernicus" / Tiempos Headline) for h1/h2 and a humanist sans for body. The signature Anthropic black-radial-spike mark anchors the wordmark.
+name: Synthara-design-system
+description: A warm-canvas editorial interface for Synthara's AI research assistant SaaS. The system anchors on a tinted cream canvas with serif display headlines, warm amber CTAs, and dark navy product surfaces (document editor, source library, citation panels). Brand voice is academic and evidence-first — credible and precise for students and researchers moving from discovery to cited export. Type pairs a slab-serif display for headings with a humanist sans for body; warm cream and amber distinguish Synthara from cooler AI-tool aesthetics.
 
 colors:
   primary: "#cc785c"
