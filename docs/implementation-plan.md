@@ -22,6 +22,8 @@ Goal: collect useful research sources from multiple channels.
 - Add per-channel loading, empty, timeout, and rate-limit states.
 - Cache successful searches and retry failed upstream calls through a queue.
 
+
+
 ## Phase 3: Workspace and Editor
 
 Goal: create the core research workspace.
@@ -31,6 +33,8 @@ Goal: create the core research workspace.
 - Add citation chips, headings, outline navigation, and comments.
 - Add project source library selection.
 - Persist document state by project.
+
+
 
 ## Phase 4: AI Assistant
 
@@ -42,6 +46,8 @@ Goal: make assistant output grounded and useful.
 - Add server-side checks for missing sources and unsupported actions.
 - Track model usage so free-tier limits are visible during development.
 
+
+
 ## Phase 5: Citation Engine
 
 Goal: make citations reliable before export.
@@ -52,6 +58,8 @@ Goal: make citations reliable before export.
 - Generate bibliography from stored citation metadata.
 - Allow citation style switching without refetching source metadata.
 
+
+
 ## Phase 6: Export and CMS Content
 
 Goal: prepare the product for demos and beta users.
@@ -60,6 +68,8 @@ Goal: prepare the product for demos and beta users.
 - Add Contentstack-backed marketing pages, help articles, release notes, and research templates.
 - Add Contentstack preview support only after delivery publishing works.
 - Add CMS content-model migration notes.
+
+
 
 ## Phase 7: Beta Hardening
 
@@ -70,3 +80,4 @@ Goal: make the app reliable enough for invited users.
 - Load-test source ingestion.
 - Add billing plans only after usage patterns are understood.
 - Review privacy and data retention for uploaded or pasted research sources.
+

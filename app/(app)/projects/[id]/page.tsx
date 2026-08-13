@@ -5,6 +5,7 @@ import { useParams, useSearchParams } from "next/navigation";
 
 import { ProjectHero } from "@/components/sources/project-hero";
 import { SourceSearchPanel } from "@/components/sources/source-search-panel";
+import { ProjectTabs } from "@/components/projects/project-tabs";
 import { useProject } from "@/hooks/use-projects";
 import { useProjectSources } from "@/hooks/use-project-sources";
 import type { CitationStyle } from "@/lib/validation/project";
@@ -40,6 +41,8 @@ export default function ProjectDetailPage() {
 
   return (
     <div className="space-y-8">
+      <ProjectTabs projectId={projectId} savedCount={savedSources.length} />
+
       <ProjectHero
         title={project.title}
         topic={project.topic}

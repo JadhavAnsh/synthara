@@ -161,3 +161,23 @@
     letter-spacing: -0.02em;
   }
 }
+
+@keyframes citation-pop {
+  0% {
+    opacity: 0.4;
+    transform: scale(0.82) translateY(2px);
+  }
+  70% {
+    transform: scale(1.06) translateY(-1px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-citation-pop {
+    animation: citation-pop 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}

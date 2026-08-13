@@ -16,6 +16,7 @@ export type SourceSummary = {
   snippets: string[];
   credibilitySignals: Record<string, unknown>;
   externalId: string;
+  selected?: boolean;
   createdAt?: string;
   updatedAt?: string;
 };

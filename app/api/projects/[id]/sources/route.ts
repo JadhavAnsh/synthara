@@ -20,6 +20,7 @@ function serializeSource(source: {
   snippets: string[];
   credibilitySignals: Record<string, unknown>;
   externalId: string;
+  selected?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }) {
@@ -32,6 +33,7 @@ function serializeSource(source: {
     snippets: source.snippets,
     credibilitySignals: source.credibilitySignals,
     externalId: source.externalId,
+    selected: Boolean(source.selected),
     createdAt: source.createdAt,
     updatedAt: source.updatedAt,
   };
