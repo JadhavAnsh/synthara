@@ -9,7 +9,7 @@ export function MarketingShell({ children }: MarketingShellProps) {
   return (
     <div className="flex min-h-screen flex-col bg-canvas text-ink">
       <TopNav variant="marketing" />
-      <main className="flex-1">{children}</main>
+      <main id="main-content" className="flex-1">{children}</main>
       <Footer />
     </div>
   );

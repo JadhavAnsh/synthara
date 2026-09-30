@@ -26,6 +26,7 @@ export async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
       "Content-Type": "application/json",
       ...init?.headers,
     },
+    signal: init?.signal,
   });
 
   const payload = await response.json();

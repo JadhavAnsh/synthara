@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { CtaBandSection } from "@/components/marketing/cta-band-section";
 import { FeatureSection } from "@/components/marketing/feature-section";
 import { HeroSection } from "@/components/marketing/hero-section";
-import { ProductPreviewSection } from "@/components/marketing/product-preview-section";
 import { WorkflowSection } from "@/components/marketing/workflow-section";
 import { WorkspaceSection } from "@/components/marketing/workspace-section";
 import { MarketingShell } from "@/components/layout/marketing-shell";
@@ -26,7 +25,6 @@ export default async function Home() {
       <HeroSection content={content.hero} />
       <FeatureSection content={content.features} />
       <WorkflowSection content={content.workflow} />
-      <ProductPreviewSection content={content.productPreview} />
       <WorkspaceSection content={content.workspace} />
       <CtaBandSection content={content.cta} />
     </MarketingShell>

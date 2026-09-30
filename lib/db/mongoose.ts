@@ -2,8 +2,13 @@ import mongoose from "mongoose";
 
 const uri = process.env.MONGODB_URI ?? "mongodb://localhost:27017/synthara";
 
+const MONGOOSE_OPTIONS = {
+  serverSelectionTimeoutMS: 5_000,
+  connectTimeoutMS: 5_000,
+  socketTimeoutMS: 10_000,
+};
+
 declare global {
-  // eslint-disable-next-line no-var
   var mongooseConn: {
     conn: typeof mongoose | null;
     promise: Promise<typeof mongoose> | null;
@@ -22,7 +27,7 @@ export async function connectDB() {
   }
 
   if (!cached.promise) {
-    cached.promise = mongoose.connect(uri);
+    cached.promise = mongoose.connect(uri, MONGOOSE_OPTIONS);
   }
 
   cached.conn = await cached.promise;

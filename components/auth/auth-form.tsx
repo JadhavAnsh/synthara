@@ -203,7 +203,7 @@ export function AuthForm({ mode }: AuthFormProps) {
   return (
     <div className="w-full max-w-md">
       <div className="mb-8">
-        <h1 className="font-[family-name:var(--font-display)] text-3xl text-ink">
+        <h1 className="font-[family-name:var(--font-display)] text-4xl text-ink sm:text-5xl">
           {isSignUp ? "Create your account" : "Welcome back"}
         </h1>
         <p className="mt-2 text-sm text-body">
@@ -291,7 +291,7 @@ export function AuthForm({ mode }: AuthFormProps) {
             {fieldErrors.password ? <FieldError>{fieldErrors.password}</FieldError> : null}
           </Field>
 
-          {error ? <FieldError>{error}</FieldError> : null}
+          {error ? <div role="alert"><FieldError>{error}</FieldError></div> : null}
 
           <Button
             type="submit"

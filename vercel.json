@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/internal/search-retries",
+      "schedule": "*/5 * * * *"
+    }
+  ]
+}

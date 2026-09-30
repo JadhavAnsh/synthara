@@ -12,6 +12,7 @@ const sourceSchema = new Schema(
     snippets: { type: [String], default: [] },
     credibilitySignals: { type: Schema.Types.Mixed, default: {} },
     externalId: { type: String, default: "" },
+    selected: { type: Boolean, default: false, index: true },
   },
   { timestamps: true },
 );

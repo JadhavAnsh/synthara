@@ -1,29 +1,17 @@
 import Link from "next/link";
 
+import { SyntharaMark } from "@/components/brand/synthara-mark";
+import { marketingNavLinks } from "@/components/marketing/marketing-nav-links";
 import { cn } from "@/lib/utils";
 
 type FooterProps = {
   className?: string;
 };
 
-const linkGroups = [
-  {
-    heading: "Product",
-    links: [
-      { label: "Overview", href: "#overview" },
-      { label: "Features", href: "#features" },
-      { label: "Workflow", href: "#workflow" },
-      { label: "Workspace", href: "#workspace" },
-    ],
-  },
-  {
-    heading: "Account",
-    links: [
-      { label: "Sign in", href: "/sign-in" },
-      { label: "Get started", href: "/sign-up" },
-    ],
-  },
-];
+const accountLinks = [
+  { label: "Sign in", href: "/sign-in" },
+  { label: "Get started free", href: "/sign-up" },
+] as const;
 
 export function Footer({ className }: FooterProps) {
   return (
@@ -32,7 +20,7 @@ export function Footer({ className }: FooterProps) {
         <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr] lg:gap-16">
           <div className="max-w-sm sm:col-span-2 lg:col-span-1">
             <div className="flex items-center gap-2.5">
-              <span className="size-2.5 rounded-full bg-primary" aria-hidden />
+              <SyntharaMark className="text-primary" />
               <p className="font-[family-name:var(--font-display)] text-2xl tracking-tight text-on-dark">
                 Synthara
               </p>
@@ -44,7 +32,7 @@ export function Footer({ className }: FooterProps) {
               href="/sign-up"
               className="mt-7 inline-flex items-center gap-2 rounded-md border border-white/10 px-4 py-2 text-sm font-medium text-on-dark transition-colors hover:border-primary hover:bg-surface-dark-elevated"
             >
-              Get started
+              Get started free
               <svg
                 aria-hidden
                 className="size-3.5 text-primary"
@@ -62,25 +50,40 @@ export function Footer({ className }: FooterProps) {
           </div>
 
           <nav className="col-span-2 grid grid-cols-2 gap-10 lg:gap-16">
-            {linkGroups.map((group) => (
-              <div key={group.heading}>
-                <p className="text-xs font-medium uppercase tracking-[0.16em] text-on-dark">
-                  {group.heading}
-                </p>
-                <ul className="mt-5 space-y-3 text-sm">
-                  {group.links.map((link) => (
-                    <li key={link.href}>
-                      <Link
-                        href={link.href}
-                        className="inline-block transition-colors hover:text-on-dark"
-                      >
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+            <div>
+              <p className="text-xs font-medium uppercase tracking-[0.16em] text-on-dark">
+                Product
+              </p>
+              <ul className="mt-5 space-y-3 text-sm">
+                {marketingNavLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="inline-block transition-colors hover:text-on-dark"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <p className="text-xs font-medium uppercase tracking-[0.16em] text-on-dark">
+                Account
+              </p>
+              <ul className="mt-5 space-y-3 text-sm">
+                {accountLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="inline-block transition-colors hover:text-on-dark"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </nav>
         </div>
 
