@@ -29,7 +29,7 @@ GEMINI_API_KEY=your_google_ai_studio_key
 GEMINI_MODEL=gemini-2.5-flash
 ```
 
-The server route at `app/api/ai/route.ts` calls Gemini through `lib/ai/gemini.ts`. Keep `GEMINI_API_KEY` server-only; do not prefix it with `NEXT_PUBLIC_`.
+The project-scoped assistant route streams grounded Gemini responses through `lib/ai/assistant.ts`. Keep `GEMINI_API_KEY` server-only; do not prefix it with `NEXT_PUBLIC_`.
 
 ## Contentstack CMS
 

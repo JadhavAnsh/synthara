@@ -26,7 +26,7 @@ export function SearchCommandBar({
   const canSearch = query.trim().length >= 3;
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-hairline bg-canvas shadow-[0_8px_30px_rgba(20,20,19,0.04)]">
+    <div className="overflow-hidden rounded-xl border border-hairline bg-canvas">
       <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:p-5">
         <div className="relative min-w-0 flex-1">
           <HugeiconsIcon
@@ -36,12 +36,14 @@ export function SearchCommandBar({
           />
           <Input
             id="search-query"
+            aria-label="Search web, academic papers, and repositories"
+            aria-describedby={errorMessage ? "search-error" : undefined}
             value={query}
             onChange={(event) => onQueryChange(event.target.value)}
             placeholder="Refine your search across web, papers, and repositories"
             className="h-12 border-hairline bg-surface-soft pl-10 text-base shadow-none"
             onKeyDown={(event) => {
-              if (event.key === "Enter") {
+              if (event.key === "Enter" && canSearch && !isSearching) {
                 event.preventDefault();
                 onSearch();
               }
@@ -74,13 +76,13 @@ export function SearchCommandBar({
       ) : null}
 
       {isSearching ? (
-        <p className="border-t border-hairline px-5 py-3 text-xs text-muted-foreground">
-          Fanning out to web, academic, and GitHub channels — usually under 30 seconds.
+        <p role="status" className="border-t border-hairline px-5 py-3 text-sm text-muted-foreground">
+          Searching web, academic papers, and GitHub. Results will appear here.
         </p>
       ) : null}
 
       {errorMessage ? (
-        <p className="border-t border-destructive/20 bg-destructive/5 px-5 py-3 text-sm text-destructive">
+        <p id="search-error" role="alert" className="border-t border-destructive/20 bg-destructive/5 px-5 py-3 text-sm text-destructive">
           {errorMessage}
         </p>
       ) : null}

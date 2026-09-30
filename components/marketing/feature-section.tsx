@@ -1,12 +1,10 @@
 import { Reveal } from "@/components/marketing/motion-primitives";
-import { FeatureCard } from "@/components/marketing/feature-card";
 import type { LandingPageContent } from "@/lib/cms/landing-content";
 
 type FeatureSectionProps = {
   content: LandingPageContent["features"];
 };
 
-const featureIcons = ["search", "shield", "citation"] as const;
 
 export function FeatureSection({ content }: FeatureSectionProps) {
   return (
@@ -18,14 +16,12 @@ export function FeatureSection({ content }: FeatureSectionProps) {
           </h2>
         </Reveal>
 
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {content.items.map((feature, index) => (
-            <FeatureCard
-              key={feature.title}
-              title={feature.title}
-              description={feature.description}
-              icon={featureIcons[index] ?? "search"}
-            />
+        <div className="mt-12 divide-y divide-hairline border-y border-hairline">
+          {content.items.map((feature) => (
+            <div key={feature.title} className="grid gap-4 py-8 md:grid-cols-[1fr_1.2fr] md:gap-16">
+              <h3 className="text-3xl text-ink">{feature.title}</h3>
+              <p className="max-w-xl text-base leading-8 text-body">{feature.description}</p>
+            </div>
           ))}
         </div>
       </div>

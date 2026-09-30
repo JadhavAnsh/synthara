@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Menu01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
@@ -21,6 +21,7 @@ import {
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { useAuthStore, selectIsAuthenticated } from "@/stores/auth-store";
+import { useHydrated } from "@/hooks/use-hydrated";
 
 type TopNavProps = {
   className?: string;
@@ -30,14 +31,10 @@ type TopNavProps = {
 export function TopNav({ className, variant = "marketing" }: TopNavProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const [hasMounted, setHasMounted] = useState(false);
+  const hasMounted = useHydrated();
   const [mobileOpen, setMobileOpen] = useState(false);
   const status = useAuthStore((state) => state.status);
   const isAuthenticated = useAuthStore(selectIsAuthenticated);
-
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
 
   async function handleSignOut() {
     await authClient.signOut();
@@ -57,10 +54,11 @@ export function TopNav({ className, variant = "marketing" }: TopNavProps) {
         className,
       )}
     >
-      <div className="mx-auto flex h-full max-w-6xl items-center justify-between gap-3 px-6 sm:px-10 lg:px-12">
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-canvas focus:p-3">Skip to content</a>
+      <div className="mx-auto flex h-full max-w-7xl items-center justify-between gap-3 px-4 sm:px-10 lg:px-12">
         <Link href="/" className="flex min-w-0 items-center gap-2.5">
           <SyntharaMark size="sm" />
-          <span className="truncate font-[family-name:var(--font-display)] text-xl tracking-tight text-ink">
+          <span className="truncate font-[family-name:var(--font-display)] text-2xl tracking-tight text-ink">
             Synthara
           </span>
         </Link>
@@ -175,7 +173,7 @@ export function TopNav({ className, variant = "marketing" }: TopNavProps) {
                 Sign in
               </Button>
               <Button size="sm" render={<Link href="/sign-up" />}>
-                Get started free
+                <span className="sm:hidden">Get started</span><span className="hidden sm:inline">Get started free</span>
               </Button>
             </>
           )}

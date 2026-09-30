@@ -4,7 +4,7 @@ const rateLimitBucketSchema = new Schema(
   {
     key: { type: String, required: true, unique: true, index: true },
     count: { type: Number, default: 0 },
-    expiresAt: { type: Date, required: true, index: true },
+    expiresAt: { type: Date, required: true },
   },
   { timestamps: false },
 );

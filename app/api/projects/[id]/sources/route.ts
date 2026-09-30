@@ -114,7 +114,7 @@ export async function POST(request: Request, context: RouteContext) {
           credibilitySignals: sourceInput.credibilitySignals,
           externalId: sourceInput.externalId,
         },
-        { upsert: true, new: true, setDefaultsOnInsert: true },
+        { upsert: true, returnDocument: "after", setDefaultsOnInsert: true },
       ).lean();
 
       if (source) {

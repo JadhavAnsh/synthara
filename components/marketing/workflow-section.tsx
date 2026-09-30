@@ -16,7 +16,7 @@ export function WorkflowSection({ content }: WorkflowSectionProps) {
           </h2>
         </Reveal>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div>
           {content.steps.map((step, index) => (
             <WorkflowStepCard
               key={step.title}

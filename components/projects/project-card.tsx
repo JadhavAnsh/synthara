@@ -17,7 +17,7 @@ type ProjectCardProps = {
 
 const STATUS_STYLES: Record<string, string> = {
   draft: "border-hairline bg-surface-soft text-body-strong",
-  active: "border-[#5db8a6]/25 bg-[#5db8a6]/10 text-[#3d8f80]",
+  active: "border-[#5db8a6]/25 bg-[#5db8a6]/10 text-[#25695c]",
   archived: "border-hairline bg-canvas text-muted-foreground",
 };
 
@@ -38,7 +38,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
     >
       <Link
         href={`/projects/${project.id}`}
-        className="group block rounded-xl border border-hairline bg-canvas p-5 transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_12px_32px_rgba(204,120,92,0.08)]"
+        className="group block h-full rounded-xl border border-hairline bg-[#fffdf8] p-6 transition-colors duration-200 hover:border-primary/50 hover:bg-surface-soft"
       >
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
@@ -50,7 +50,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
                 {project.status}
               </span>
             </div>
-            <h2 className="mt-3 font-[family-name:var(--font-display)] text-xl leading-snug text-ink transition-colors group-hover:text-primary">
+            <h2 className="mt-4 break-words font-[family-name:var(--font-display)] text-3xl leading-snug text-ink transition-colors group-hover:text-primary">
               {project.title}
             </h2>
             <p className="mt-2 line-clamp-2 text-sm leading-6 text-body">{project.topic}</p>

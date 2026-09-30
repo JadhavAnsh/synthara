@@ -17,7 +17,7 @@ const springSnappy = { type: "spring" as const, stiffness: 400, damping: 30 };
 const springSoft = { type: "spring" as const, stiffness: 320, damping: 28 };
 
 export const staggerContainer: Variants = {
-  hidden: { opacity: 0 },
+  hidden: { opacity: 1 },
   visible: {
     opacity: 1,
     transition: { staggerChildren: 0.08, delayChildren: 0.04 },
@@ -25,7 +25,7 @@ export const staggerContainer: Variants = {
 };
 
 export const staggerItem: Variants = {
-  hidden: { opacity: 0, y: 14 },
+  hidden: { opacity: 1, y: 0 },
   visible: {
     opacity: 1,
     y: 0,
@@ -34,7 +34,7 @@ export const staggerItem: Variants = {
 };
 
 export const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 16 },
+  hidden: { opacity: 1, y: 0 },
   visible: {
     opacity: 1,
     y: 0,

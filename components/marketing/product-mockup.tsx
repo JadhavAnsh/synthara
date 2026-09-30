@@ -1,190 +1,40 @@
 "use client";
 
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
 
-const channels = ["Web", "Academic", "Code"] as const;
-type Channel = (typeof channels)[number];
-
-const results = [
-  {
-    channel: "Academic" as const,
-    title: "Attention is all you need",
-    meta: "Vaswani et al. · arXiv · 2017",
-  },
-  {
-    channel: "Web" as const,
-    title: "Transformer architecture overview",
-    meta: "Google Research · 2024",
-  },
-  {
-    channel: "Code" as const,
-    title: "pytorch/transformers",
-    meta: "GitHub · 42k stars",
-  },
-  {
-    channel: "Academic" as const,
-    title: "BERT: Pre-training of deep bidirectional transformers",
-    meta: "Devlin et al. · ACL · 2019",
-  },
+const stages = ["Discover", "Connect", "Draft"] as const;
+const sources = [
+  { title: "Attention is all you need", meta: "Vaswani et al. · 2017", type: "Paper" },
+  { title: "BERT: pre-training deep bidirectional transformers", meta: "Devlin et al. · 2019", type: "Paper" },
+  { title: "The annotated transformer", meta: "Architecture and implementation", type: "Web" },
 ];
 
-const channelStyles: Record<Channel, string> = {
-  Web: "bg-surface-dark-elevated text-on-dark-soft",
-  Academic: "bg-primary/20 text-on-dark",
-  Code: "bg-chart-2/20 text-on-dark",
-};
-
-const CYCLE_MS = 3200;
-
 export function ProductMockup() {
-  const reduceMotion = useReducedMotion();
-  const [activeChannel, setActiveChannel] = useState<Channel>("Web");
-  const intervalRef = useRef<number | null>(null);
-
-  const filteredResults = useMemo(
-    () => results.filter((result) => result.channel === activeChannel),
-    [activeChannel],
-  );
-
-  const startCycle = useCallback(() => {
-    if (intervalRef.current) {
-      window.clearInterval(intervalRef.current);
-    }
-    if (reduceMotion) return;
-
-    intervalRef.current = window.setInterval(() => {
-      setActiveChannel((current) => {
-        const index = channels.indexOf(current);
-        return channels[(index + 1) % channels.length];
-      });
-    }, CYCLE_MS);
-  }, [reduceMotion]);
-
-  const selectChannel = useCallback(
-    (channel: Channel) => {
-      setActiveChannel(channel);
-      startCycle();
-    },
-    [startCycle],
-  );
-
-  useEffect(() => {
-    startCycle();
-    return () => {
-      if (intervalRef.current) {
-        window.clearInterval(intervalRef.current);
-      }
-    };
-  }, [startCycle]);
-
+  const [stage, setStage] = useState(0);
+  const reduced = useReducedMotion();
   return (
-    <div className="overflow-hidden rounded-xl border border-white/10 bg-surface-dark shadow-lg">
-      <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
-        <motion.span
-          aria-hidden
-          className="size-2 rounded-full bg-chart-2"
-          animate={reduceMotion ? undefined : { opacity: [1, 0.35, 1] }}
-          transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <p className="font-mono text-xs text-on-dark-soft">
-          transformer attention mechanisms
-          {!reduceMotion ? (
-            <motion.span
-              aria-hidden
-              className="ml-0.5 inline-block w-[2px] translate-y-px bg-primary"
-              animate={{ opacity: [1, 0, 1] }}
-              transition={{ duration: 1.1, repeat: Infinity, ease: "linear" }}
-              style={{ height: "0.85em" }}
-            />
-          ) : null}
-        </p>
+    <div className="observatory-demo overflow-hidden rounded-2xl bg-[#fffdf8]">
+      <div className="flex items-center justify-between gap-4 border-b border-hairline px-6 py-4 text-xs text-muted-foreground">
+        <span>Research in motion</span><span>Interactive example</span>
       </div>
-
-      <div className="p-4 sm:p-5">
-        <div className="flex flex-wrap gap-2">
-          {channels.map((channel) => {
-            const isActive = channel === activeChannel;
-
-            return (
-              <button
-                key={channel}
-                type="button"
-                onClick={() => selectChannel(channel)}
-                className={
-                  isActive
-                    ? "relative rounded-md px-2.5 py-1 text-xs font-medium text-primary-foreground"
-                    : "relative rounded-md border border-white/10 px-2.5 py-1 text-xs font-medium text-on-dark-soft transition-colors hover:border-white/20 hover:text-on-dark"
-                }
-              >
-                {isActive ? (
-                  <motion.span
-                    layoutId="product-channel-tab"
-                    className="absolute inset-0 rounded-md bg-primary"
-                    transition={{ type: "spring", stiffness: 420, damping: 32 }}
-                  />
-                ) : null}
-                <span className="relative z-10">{channel}</span>
-              </button>
-            );
-          })}
+      <div className="px-6 pt-7 sm:px-8">
+        <p className="font-[family-name:var(--font-display)] text-3xl leading-tight text-ink">How do transformers<br />understand context?</p>
+        <div className="mt-6 flex border-b border-hairline" role="group" aria-label="Explore the research workflow">
+          {stages.map((label, index) => (
+            <button key={label} type="button" aria-pressed={stage === index} onClick={() => setStage(index)} className={`relative flex-1 py-3 text-sm transition-colors ${stage === index ? "font-semibold text-primary" : "text-muted-foreground hover:text-ink"}`}>
+              {label}
+              {stage === index && <motion.span layoutId="demo-stage" transition={reduced ? { duration: 0 } : { type: "spring", stiffness: 380, damping: 32 }} className="absolute inset-x-0 bottom-0 h-0.5 bg-primary" />}
+            </button>
+          ))}
         </div>
-
-        <ul className="mt-4 space-y-2">
-          <AnimatePresence mode="popLayout" initial={false}>
-            {filteredResults.map((result, index) => (
-              <motion.li
-                key={`${activeChannel}-${result.title}`}
-                layout
-                initial={reduceMotion ? false : { opacity: 0, y: 10, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={reduceMotion ? undefined : { opacity: 0, y: -6, scale: 0.98 }}
-                transition={{
-                  type: "spring",
-                  stiffness: 480,
-                  damping: 32,
-                  delay: index * 0.05,
-                }}
-                className={
-                  index === 0
-                    ? "rounded-md border border-primary/40 bg-surface-dark-elevated p-3"
-                    : "rounded-md border border-white/5 bg-surface-dark-soft/60 p-3"
-                }
-                whileHover={
-                  reduceMotion
-                    ? undefined
-                    : {
-                        borderColor: "rgba(204, 120, 92, 0.5)",
-                        backgroundColor: "rgba(37, 35, 32, 0.9)",
-                        y: -1,
-                      }
-                }
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <p className="text-sm leading-5 text-on-dark">{result.title}</p>
-                  <span
-                    className={`shrink-0 rounded px-1.5 py-0.5 text-xs font-medium uppercase tracking-wide ${channelStyles[result.channel]}`}
-                  >
-                    {result.channel}
-                  </span>
-                </div>
-                <p className="mt-1.5 font-mono text-xs text-on-dark-soft">{result.meta}</p>
-              </motion.li>
-            ))}
-          </AnimatePresence>
-        </ul>
-
-        <motion.p
-          className="mt-4 text-xs text-on-dark-soft"
-          key={activeChannel}
-          initial={reduceMotion ? false : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.2 }}
-        >
-          {filteredResults.length} sources in {activeChannel.toLowerCase()} · metadata normalized
-          for citation
-        </motion.p>
       </div>
+      <div className="min-h-[290px] px-6 py-6 sm:px-8" aria-live="polite">
+        <motion.div key={stage} initial={reduced ? false : { opacity: 0.6, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+          {stage === 0 ? <ul className="divide-y divide-hairline">{sources.map((source) => <li key={source.title} className="flex items-start gap-4 py-4 first:pt-0"><span className="mt-1 w-10 shrink-0 text-xs text-primary">{source.type}</span><div><p className="text-sm font-medium leading-6 text-ink">{source.title}</p><p className="mt-1 text-xs text-muted-foreground">{source.meta}</p></div></li>)}</ul> : stage === 1 ? <div><p className="text-sm text-muted-foreground">A shared idea across your sources</p><p className="mt-5 font-[family-name:var(--font-display)] text-3xl text-ink">Context changes meaning.</p><p className="mt-4 text-sm leading-7 text-body">Self-attention connects words across a sequence. Bidirectional training builds on that idea to learn from the surrounding context.</p><div className="mt-5 flex flex-wrap gap-3 text-xs text-primary"><span>Attention architecture</span><span aria-hidden>→</span><span>Contextual representations</span></div></div> : <div><p className="font-[family-name:var(--font-display)] text-2xl text-ink">From attention to understanding</p><p className="mt-4 text-sm leading-8 text-body">Transformer models use self-attention to model relationships within a sequence <span className="rounded bg-surface-card px-1 text-primary">[1]</span>. BERT extends this approach through bidirectional pre-training <span className="rounded bg-surface-card px-1 text-primary">[2]</span>.</p><p className="mt-6 border-t border-hairline pt-4 text-xs leading-5 text-muted-foreground">Illustrative draft · Review evidence before using generated text.</p></div>}
+        </motion.div>
+      </div>
+      <div className="flex items-center justify-between gap-4 bg-surface-dark px-6 py-4 text-xs text-on-dark-soft"><span>From question to a grounded draft</span><button type="button" onClick={() => setStage((stage + 1) % stages.length)} className="shrink-0 py-2 text-on-dark underline underline-offset-4">{stage === 2 ? "Start again" : `Explore ${stages[stage + 1].toLowerCase()}`}</button></div>
     </div>
   );
 }

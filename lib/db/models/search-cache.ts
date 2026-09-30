@@ -12,7 +12,7 @@ const searchCacheSchema = new Schema(
       required: true,
     },
     results: { type: Schema.Types.Mixed, required: true },
-    expiresAt: { type: Date, required: true, index: true },
+    expiresAt: { type: Date, required: true },
   },
   { timestamps: true },
 );

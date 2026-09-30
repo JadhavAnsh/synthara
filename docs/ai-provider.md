@@ -14,25 +14,29 @@ Use the Google Gemini Developer API for development because it provides free-tie
 ```bash
 GEMINI_API_KEY=your_key
 GEMINI_MODEL=gemini-2.5-flash
+AI_DEVELOPMENT_TOKEN_BUDGET=1000000
 ```
 
 ## How the App Uses It
 
-- `lib/ai/gemini.ts` builds the Gemini API request.
-- `app/api/ai/route.ts` exposes a server route for assistant messages.
+- `lib/ai/assistant.ts` streams grounded Gemini responses through the AI SDK.
+- `app/api/projects/[id]/assistant/route.ts` validates project ownership, selected sources, and supported actions.
+- The workspace supports source summary, outline, section drafting, selection rewriting, and citation insertion.
+- Monthly per-project token usage is persisted and displayed against `AI_DEVELOPMENT_TOKEN_BUDGET`.
 - The key is read on the server only.
 
 ## Example Request
 
 ```bash
-curl -X POST http://localhost:3000/api/ai \
+curl -X POST http://localhost:3000/api/projects/PROJECT_ID/assistant \
   -H "Content-Type: application/json" \
-  -d '{"messages":[{"role":"user","text":"Create a research outline about retrieval augmented generation for education."}]}'
+  -d '{"action":"propose_outline","prompt":"Create an outline for the selected evidence.","messages":[]}'
 ```
+
+The request requires an authenticated, verified session and at least one selected project source.
 
 ## Production Notes
 
 - Free-tier quotas are for development, not a full SaaS launch.
 - Review the current Gemini pricing, rate limits, and data-use terms before production.
-- Track token usage per user and project.
 - Add a provider abstraction before adding paid fallbacks such as OpenAI, Anthropic, or OpenRouter.

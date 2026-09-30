@@ -12,10 +12,15 @@ import { WorkspaceHeader } from "@/components/workspace/workspace-header";
 import { WorkspaceLayout } from "@/components/workspace/workspace-layout";
 import { WorkspaceLoading } from "@/components/workspace/workspace-loading";
 import { useEditorScrollSpy } from "@/hooks/use-editor-scroll-spy";
-import { useProjectDocument, useUpdateSourceSelection } from "@/hooks/use-project-document";
+import {
+  useCreateDocumentCitation,
+  useProjectDocument,
+  useUpdateSourceSelection,
+} from "@/hooks/use-project-document";
 import { useProjectSources } from "@/hooks/use-project-sources";
 import { useProject } from "@/hooks/use-projects";
 import type { CitationStyle } from "@/lib/validation/project";
+import { sourceToCslJson } from "@/lib/citations/source-to-csl";
 import {
   extractCommentsFromEditor,
   extractOutlineFromEditor,
@@ -35,6 +40,7 @@ export function WorkspacePageClient({ projectId }: WorkspacePageClientProps) {
   const { data: document, isLoading: documentLoading } = useProjectDocument(projectId);
   const { data: sources = [], isLoading: sourcesLoading } = useProjectSources(projectId);
   const updateSelection = useUpdateSourceSelection(projectId);
+  const createCitation = useCreateDocumentCitation(projectId);
 
   const selectedIds = useMemo(
     () => sources.filter((source) => source.selected).map((source) => source.id),
@@ -84,6 +90,31 @@ export function WorkspacePageClient({ projectId }: WorkspacePageClientProps) {
     [selectedIds, updateSelection],
   );
 
+  const handleAssistantCitation = useCallback(
+    async (source: (typeof selectedSources)[number]) => {
+      if (!editor) {
+        throw new Error("The editor is not ready.");
+      }
+
+      const citation = await createCitation.mutateAsync({
+        sourceId: source.id,
+        cslJson: sourceToCslJson(source),
+        range: { from: editor.state.selection.from, to: editor.state.selection.to },
+      });
+
+      editor
+        .chain()
+        .focus()
+        .insertCitationChip({
+          citationId: citation.id,
+          sourceId: source.id,
+          label: citation.label,
+        })
+        .run();
+    },
+    [createCitation, editor],
+  );
+
   if (projectLoading || documentLoading || sourcesLoading) {
     return <WorkspaceLoading />;
   }
@@ -101,7 +132,7 @@ export function WorkspacePageClient({ projectId }: WorkspacePageClientProps) {
   }
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] flex-col bg-surface-dark">
+    <div id="main-content" className="flex h-[calc(100dvh-4rem)] flex-col bg-surface-dark">
       <WorkspaceHeader
         projectId={projectId}
         title={project.title}
@@ -154,7 +185,20 @@ export function WorkspacePageClient({ projectId }: WorkspacePageClientProps) {
             isUpdating={updateSelection.isPending}
           />
         }
-        assistant={<AssistantShell projectId={projectId} selectedCount={selectedIds.length} />}
+        assistant={
+          <AssistantShell
+            projectId={projectId}
+            selectedSources={selectedSources}
+            getEditorSelection={() => {
+              if (!editor) {
+                return "";
+              }
+              const { from, to } = editor.state.selection;
+              return from === to ? "" : editor.state.doc.textBetween(from, to, "\n");
+            }}
+            onInsertCitation={handleAssistantCitation}
+          />
+        }
       />
     </div>
   );

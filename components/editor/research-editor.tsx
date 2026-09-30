@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 
 import { EditorToolbar } from "@/components/editor/editor-toolbar";
@@ -46,7 +46,6 @@ export function ResearchEditor({
 }: ResearchEditorProps) {
   const saveTimeoutRef = useRef<number | null>(null);
   const hasSeededRef = useRef(false);
-  const [isReady, setIsReady] = useState(false);
 
   const updateDocument = useUpdateProjectDocument(projectId);
   const createCitation = useCreateDocumentCitation(projectId);
@@ -109,7 +108,6 @@ export function ResearchEditor({
     }
 
     hasSeededRef.current = true;
-    setIsReady(true);
     reportWordCount(editor);
     onEditorReady?.(editor);
   }, [editor, initialContent, onEditorReady, reportWordCount, title]);
@@ -198,7 +196,7 @@ export function ResearchEditor({
         isCitationPending={createCitation.isPending}
       />
       <div className="min-h-0 flex-1 overflow-y-auto" data-editor-scroll-root>
-        {isReady ? <EditorContent editor={editor} /> : null}
+        <EditorContent editor={editor} />
       </div>
     </div>
   );

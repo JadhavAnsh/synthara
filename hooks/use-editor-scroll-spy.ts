@@ -14,7 +14,6 @@ export function useEditorScrollSpy(
 
   useEffect(() => {
     if (!editor || !headings.length) {
-      setActiveHeadingId(null);
       return;
     }
 
@@ -55,5 +54,5 @@ export function useEditorScrollSpy(
     };
   }, [editor, headings, scrollRootSelector]);
 
-  return activeHeadingId;
+  return editor && headings.length ? activeHeadingId : null;
 }

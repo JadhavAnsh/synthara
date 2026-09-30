@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { OwnershipError, assertProjectOwner } from "@/lib/auth/ownership";
 import { requireVerifiedApiSession } from "@/lib/auth/session";
 import { connectDB } from "@/lib/db/mongoose";
-import { Citation, DocumentModel } from "@/lib/db/models";
+import { Citation, DocumentModel, Source } from "@/lib/db/models";
 import { updateDocumentSchema, validateEditorStateSize } from "@/lib/validation/document";
 
 type RouteContext = {
@@ -92,7 +92,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     const document = await DocumentModel.findOneAndUpdate(
       { projectId: id },
       { editorState: parsed.data.editorState },
-      { new: true },
+      { returnDocument: "after" },
     ).lean();
 
     if (!document) {
@@ -143,6 +143,11 @@ export async function POST(request: Request, context: RouteContext) {
     const document = await DocumentModel.findOne({ projectId: id }).lean();
     if (!document) {
       return NextResponse.json({ error: "Document not found." }, { status: 404 });
+    }
+
+    const source = await Source.findOne({ _id: sourceId, projectId: id }).lean();
+    if (!source) {
+      return NextResponse.json({ error: "Source not found in this project." }, { status: 404 });
     }
 
     const cslJson =

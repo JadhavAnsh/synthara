@@ -66,14 +66,14 @@ export async function enqueueSearchJob(input: {
 }
 
 async function runSearchJob(jobId: mongoose.Types.ObjectId): Promise<ChannelSearchResult | null> {
-  const job = await SearchJob.findById(jobId);
-  if (!job || job.status !== "pending" || job.runAfter > new Date()) {
+  const job = await SearchJob.findOneAndUpdate(
+    { _id: jobId, status: "pending", runAfter: { $lte: new Date() } },
+    { $set: { status: "processing" }, $inc: { attempts: 1 } },
+    { returnDocument: "after" },
+  );
+  if (!job) {
     return null;
   }
-
-  job.status = "processing";
-  job.attempts += 1;
-  await job.save();
 
   try {
     const provider = getSearchProvider(job.channel);
@@ -172,5 +172,34 @@ export async function processPendingSearchJobs(projectId: string, limit = 3) {
   }
 }
 
-// Future migration path: swap this inline processor for a Redis/BullMQ worker
-// without changing API routes or UI contracts.
+export async function processAllPendingSearchJobs(limit = 25) {
+  try {
+    await connectDB();
+
+    const jobs = await SearchJob.find({
+      status: "pending",
+      runAfter: { $lte: new Date() },
+    })
+      .sort({ runAfter: 1 })
+      .limit(limit)
+      .select({ _id: 1 })
+      .lean();
+
+    let recoveredCount = 0;
+    for (const job of jobs) {
+      if (await runSearchJob(job._id)) {
+        recoveredCount += 1;
+      }
+    }
+
+    return { processedCount: jobs.length, recoveredCount };
+  } catch (error) {
+    logError("search-queue", "worker.failed", {
+      message: error instanceof Error ? error.message : "Unknown queue worker error",
+    });
+    throw error;
+  }
+}
+
+// The database-backed worker keeps the API contract stable and can later be
+// swapped for Redis/BullMQ when search volume requires distributed workers.

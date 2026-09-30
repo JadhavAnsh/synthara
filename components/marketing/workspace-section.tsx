@@ -11,7 +11,7 @@ export function WorkspaceSection({ content }: WorkspaceSectionProps) {
     <section id="workspace" className="border-b border-hairline bg-surface-card">
       <div className="mx-auto w-full max-w-6xl px-6 py-24 sm:px-10 lg:px-12">
         <div className="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
-          <Reveal>
+          <Reveal className="min-w-0">
             <h2 className="font-[family-name:var(--font-display)] text-3xl tracking-tight text-ink sm:text-4xl">
               {content.headline}
             </h2>
@@ -25,7 +25,7 @@ export function WorkspaceSection({ content }: WorkspaceSectionProps) {
             </ul>
           </Reveal>
 
-          <Reveal delay={0.08}>
+          <Reveal delay={0.08} className="min-w-0">
             <div className="overflow-hidden rounded-lg border border-white/10 bg-surface-dark">
               <WorkspaceMockup />
             </div>

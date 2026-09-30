@@ -20,11 +20,11 @@ const TYPE_STYLES: Record<string, { badge: string; ring: string }> = {
     ring: "hover:border-primary/35 hover:shadow-[0_8px_24px_rgba(204,120,92,0.08)]",
   },
   academic: {
-    badge: "border-[#5db8a6]/25 bg-[#5db8a6]/10 text-[#3d8f80]",
+    badge: "border-[#5db8a6]/25 bg-[#5db8a6]/10 text-[#25695c]",
     ring: "hover:border-[#5db8a6]/35 hover:shadow-[0_8px_24px_rgba(93,184,166,0.08)]",
   },
   github: {
-    badge: "border-[#e8a55a]/25 bg-[#e8a55a]/10 text-[#b87a2a]",
+    badge: "border-[#e8a55a]/25 bg-[#e8a55a]/10 text-[#80521c]",
     ring: "hover:border-[#e8a55a]/35 hover:shadow-[0_8px_24px_rgba(232,165,90,0.08)]",
   },
   manual: {
@@ -61,7 +61,7 @@ export function SourceResultCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, delay: Math.min(index * 0.04, 0.24), ease: [0.16, 1, 0.3, 1] }}
       className={cn(
-        "group rounded-xl border border-hairline bg-canvas p-5 transition-[border-color,box-shadow] duration-200",
+        "group rounded-xl border border-hairline bg-[#fffdf8] p-6 transition-colors duration-200",
         styles.ring,
       )}
     >
@@ -75,7 +75,7 @@ export function SourceResultCard({
           >
             {source.sourceType}
           </span>
-          <h3 className="mt-3 font-[family-name:var(--font-display)] text-xl leading-snug text-ink">
+          <h3 className="mt-3 break-words font-[family-name:var(--font-display)] text-2xl leading-snug text-ink">
             {source.title}
           </h3>
           <p className="mt-1.5 text-sm text-body">{formatAuthors(source.authors)}</p>

@@ -1,25 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 
 import { MotionPress } from "@/components/marketing/motion-primitives";
 import { Button } from "@/components/ui/button";
 import type { LandingPageContent } from "@/lib/cms/landing-content";
 import { useAuthStore, selectIsAuthenticated } from "@/stores/auth-store";
+import { useHydrated } from "@/hooks/use-hydrated";
 
 type HeroCtasProps = {
   content: LandingPageContent["hero"];
 };
 
 export function HeroCtas({ content }: HeroCtasProps) {
-  const [hasMounted, setHasMounted] = useState(false);
+  const hasMounted = useHydrated();
   const status = useAuthStore((state) => state.status);
   const isAuthenticated = useAuthStore(selectIsAuthenticated);
-
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
 
   const showAuthenticated = hasMounted && status !== "loading" && isAuthenticated;
 

@@ -86,7 +86,7 @@ export async function setCachedChannelResult(
         results: [result],
         expiresAt,
       },
-      { upsert: true, new: true, setDefaultsOnInsert: true },
+      { upsert: true, returnDocument: "after", setDefaultsOnInsert: true },
     );
 
     logInfo("search-cache", "channel.write", { channel, queryHash, status: result.status });

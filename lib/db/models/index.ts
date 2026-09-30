@@ -1,3 +1,4 @@
+export { AiUsage } from "./ai-usage";
 export { Citation } from "./citation";
 export { DocumentModel } from "./document";
 export { Project } from "./project";

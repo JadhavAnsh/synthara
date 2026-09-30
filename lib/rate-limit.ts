@@ -33,7 +33,7 @@ export async function consumeRateLimit(input: ConsumeRateLimitInput) {
         $inc: { count: 1 },
         $setOnInsert: { expiresAt },
       },
-      { upsert: true, new: true, setDefaultsOnInsert: true },
+      { upsert: true, returnDocument: "after", setDefaultsOnInsert: true },
     ).lean();
 
     if (!bucket || bucket.count > input.limit) {
