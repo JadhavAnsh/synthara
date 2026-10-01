@@ -10,10 +10,10 @@ The product direction is a dual-pane interface: a document editor on the left an
 - **Styling:** Tailwind CSS with shadcn/ui components
 - **AI provider for development:** Google Gemini Developer API
 - **CMS:** Contentstack Delivery API
-- **Planned data layer:** PostgreSQL with pgvector for metadata and semantic retrieval
-- **Planned realtime layer:** Yjs or a managed CRDT service for collaborative document editing
+- **Data layer:** MongoDB for auth, projects, sources, citations, and documents
+- **Planned collaboration:** self-hosted Node WebSocket document sync for invited project members, with Redis for shared presence and coordination
 - **Search cache/retry (Phase 2):** MongoDB per-channel cache (24h TTL) and retry queue with inline processing on subsequent searches
-- **Planned queues/cache upgrade:** Redis and BullMQ worker for background search retries at scale
+- **Planned queues/cache upgrade:** Redis and BullMQ worker for background search retries
 
 ## Free AI API Provider
 

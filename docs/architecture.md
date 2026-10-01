@@ -9,13 +9,14 @@
 | CMS layer | Marketing content, help docs, release notes, templates |
 | Search aggregation | Web, academic, and GitHub source discovery |
 | Document workspace | Editor state, citation chips, section outline, comments |
-| Data layer | Users, projects, documents, sources, citations, embeddings |
-| Queue/cache layer | API retry jobs, rate-limit control, source caching |
+| MongoDB data layer | Users, projects, documents, sources, citations, and search state |
+| Queue/cache layer | API retry jobs, rate-limit control, source caching; Redis is planned |
+| Collaboration layer | Planned self-hosted Node WebSocket document synchronization for invited project members with Redis coordination |
 
 ## Current Integrations
 
-- `lib/ai/gemini.ts` wraps Google Gemini calls behind a project-specific function.
-- `app/api/ai/route.ts` exposes a server-only assistant endpoint.
+- `lib/ai/assistant.ts` streams grounded Gemini responses for a project.
+- `app/api/projects/[id]/assistant/route.ts` checks project ownership and selected sources.
 - `lib/cms/contentstack.ts` fetches published Contentstack entries through the Delivery API.
 
 ## Planned Data Model
@@ -34,8 +35,8 @@
 2. Search aggregation fans out to web, academic, and code sources.
 3. Results are normalized, deduplicated, and cached.
 4. User selects sources for a project.
-5. Assistant answers or drafts using selected source context.
-6. Editor stores structured document state and citation references.
+5. Assistant streams sourced draft text into the editor for review and revision.
+6. Editor stores structured document state and citation references in MongoDB.
 7. Export engine renders DOCX, PDF, or Markdown.
 
 ## Provider Boundaries

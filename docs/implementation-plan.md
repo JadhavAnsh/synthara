@@ -40,9 +40,9 @@ Goal: create the core research workspace.
 
 Goal: make assistant output grounded and useful.
 
-- Add tools for summarize source, propose outline, draft section, rewrite section, and insert citation.
+- Add tools for complete document drafting, summarize source, propose outline, draft section, rewrite section, and insert citation.
 - Retrieve selected source context before drafting.
-- Stream assistant responses into the chat UI.
+- Stream document drafting and rewriting into the editor; show analysis responses in the assistant panel.
 - Add server-side checks for missing sources and unsupported actions.
 - Track model usage so free-tier limits are visible during development.
 
@@ -80,4 +80,3 @@ Goal: make the app reliable enough for invited users.
 - Load-test source ingestion.
 - Add billing plans only after usage patterns are understood.
 - Review privacy and data retention for uploaded or pasted research sources.
-

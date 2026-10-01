@@ -61,34 +61,6 @@ Built-in templates:
 - `verification` — account email confirmation
 - `welcome` — post-verification onboarding
 
-## Authenticated API
-
-Verified users can send mail through:
-
-`POST /api/email/send`
-
-```json
-{
-  "to": "user@university.edu",
-  "subject": "Synthara notification",
-  "html": "<p>Custom HTML body</p>",
-  "text": "Custom text body"
-}
-```
-
-Or with a template:
-
-```json
-{
-  "to": "user@university.edu",
-  "template": "welcome",
-  "templateData": {
-    "recipientName": "Ada",
-    "dashboardUrl": "http://localhost:3000/projects"
-  }
-}
-```
-
 ## Auth Integration
 
 Better Auth uses `sendVerificationEmailMessage` for required email verification. Sign-up rejects invalid or disposable addresses before user records are created.

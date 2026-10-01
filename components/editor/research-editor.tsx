@@ -45,6 +45,9 @@ export function ResearchEditor({
   className,
 }: ResearchEditorProps) {
   const saveTimeoutRef = useRef<number | null>(null);
+  const pendingSaveRef = useRef<(() => void) | null>(null);
+  const saveChainRef = useRef<Promise<void>>(Promise.resolve());
+  const revisionRef = useRef(0);
   const hasSeededRef = useRef(false);
 
   const updateDocument = useUpdateProjectDocument(projectId);
@@ -78,21 +81,27 @@ export function ResearchEditor({
 
       reportWordCount(currentEditor);
       onSaveStatusChange?.("saving");
+      const revision = ++revisionRef.current;
+      const editorState = currentEditor.getJSON() as Record<string, unknown>;
 
       if (saveTimeoutRef.current) {
         window.clearTimeout(saveTimeoutRef.current);
       }
 
-      saveTimeoutRef.current = window.setTimeout(async () => {
-        try {
-          await updateDocument.mutateAsync({
-            editorState: currentEditor.getJSON() as Record<string, unknown>,
+      const save = () => {
+        pendingSaveRef.current = null;
+        saveChainRef.current = saveChainRef.current
+          .then(async () => {
+            if (revision !== revisionRef.current) return;
+            await updateDocument.mutateAsync({ editorState });
+            if (revision === revisionRef.current) onSaveStatusChange?.("saved");
+          })
+          .catch(() => {
+            if (revision === revisionRef.current) onSaveStatusChange?.("error");
           });
-          onSaveStatusChange?.("saved");
-        } catch {
-          onSaveStatusChange?.("error");
-        }
-      }, 800);
+      };
+      pendingSaveRef.current = save;
+      saveTimeoutRef.current = window.setTimeout(save, 800);
     },
   });
 
@@ -117,6 +126,7 @@ export function ResearchEditor({
       if (saveTimeoutRef.current) {
         window.clearTimeout(saveTimeoutRef.current);
       }
+      pendingSaveRef.current?.();
     };
   }, []);
 

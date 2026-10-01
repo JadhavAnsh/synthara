@@ -8,6 +8,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { fetchAssistantUsage, openAssistantStream } from "@/lib/api/assistant";
 import type { SourceSummary } from "@/lib/api/sources";
+import { splitCompleteWords } from "@/lib/editor/word-stream";
 import {
   ASSISTANT_ACTION_LABELS,
   ASSISTANT_ACTIONS,
@@ -20,6 +21,10 @@ type AssistantShellProps = {
   selectedSources: SourceSummary[];
   getEditorSelection: () => string;
   onInsertCitation: (source: SourceSummary) => Promise<void>;
+  onBeginWriting: (action: "draft_document" | "draft_section" | "rewrite_section") => {
+    append: (text: string) => void;
+    finish: () => void;
+  };
 };
 
 type AssistantMessage = {
@@ -30,6 +35,7 @@ type AssistantMessage = {
 };
 
 const ACTION_PLACEHOLDERS: Record<AssistantAction, string> = {
+  draft_document: "Optional focus or instructions for the full draft…",
   summarize_source: "What should the summary emphasize? (optional)",
   propose_outline: "Describe the document goal or constraints…",
   draft_section: "Name the section and what it should establish…",
@@ -44,9 +50,10 @@ export function AssistantShell({
   selectedSources,
   getEditorSelection,
   onInsertCitation,
+  onBeginWriting,
 }: AssistantShellProps) {
   const queryClient = useQueryClient();
-  const [action, setAction] = useState<AssistantAction>("propose_outline");
+  const [action, setAction] = useState<AssistantAction>("draft_document");
   const [prompt, setPrompt] = useState("");
   const [sourceId, setSourceId] = useState(selectedSources[0]?.id ?? "");
   const [messages, setMessages] = useState<AssistantMessage[]>([]);
@@ -86,7 +93,7 @@ export function AssistantShell({
       setError("Choose a selected source for this action.");
       return;
     }
-    if (!prompt.trim() && action !== "summarize_source" && action !== "insert_citation") {
+    if (!prompt.trim() && action !== "draft_document" && action !== "summarize_source" && action !== "insert_citation") {
       setError("Add a short instruction for this action.");
       return;
     }
@@ -100,11 +107,12 @@ export function AssistantShell({
     };
     const assistantId = crypto.randomUUID();
     const history = messages.map(({ role, text }) => ({ role, text }));
+    const writesInEditor = action === "draft_document" || action === "draft_section" || action === "rewrite_section";
 
     setMessages((current) => [
       ...current,
       userMessage,
-      { id: assistantId, role: "assistant", text: "", action },
+      { id: assistantId, role: "assistant", text: writesInEditor ? "Writing in the editor…" : "", action },
     ]);
     setPrompt("");
     setError(null);
@@ -113,7 +121,14 @@ export function AssistantShell({
     const controller = new AbortController();
     abortRef.current = controller;
 
+    let writingSession: ReturnType<typeof onBeginWriting> | null = null;
+    let wroteToEditor = false;
+
     try {
+      if (writesInEditor) {
+        writingSession = onBeginWriting(action);
+      }
+
       const reader = await openAssistantStream(
         projectId,
         {
@@ -132,13 +147,19 @@ export function AssistantShell({
 
       const decoder = new TextDecoder();
       let accumulated = "";
+      let pendingWord = "";
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) {
-          break;
+      function acceptText(text: string) {
+        accumulated += text;
+        if (writingSession) {
+          const split = splitCompleteWords(pendingWord, text);
+          pendingWord = split.pending;
+          if (split.complete) {
+            writingSession.append(split.complete);
+            wroteToEditor = true;
+          }
+          return;
         }
-        accumulated += decoder.decode(value, { stream: true });
         setMessages((current) =>
           current.map((message) =>
             message.id === assistantId ? { ...message, text: accumulated } : message,
@@ -146,25 +167,53 @@ export function AssistantShell({
         );
       }
 
-      accumulated += decoder.decode();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          break;
+        }
+        acceptText(decoder.decode(value, { stream: true }));
+      }
+
+      acceptText(decoder.decode());
       if (!accumulated.trim()) {
         throw new Error("The assistant returned no text.");
+      }
+      if (writingSession) {
+        if (pendingWord) {
+          writingSession.append(pendingWord);
+          wroteToEditor = true;
+        }
+        setMessages((current) =>
+          current.map((message) =>
+            message.id === assistantId
+              ? { ...message, text: "Draft added to the editor. Review and edit it there." }
+              : message,
+          ),
+        );
       }
     } catch (streamError) {
       if (controller.signal.aborted) {
         setMessages((current) =>
           current.map((message) =>
-            message.id === assistantId && !message.text
-              ? { ...message, text: "Response stopped." }
+            message.id === assistantId
+              ? { ...message, text: wroteToEditor ? "Writing stopped. Review the partial draft in the editor." : "Response stopped." }
               : message,
           ),
         );
       } else {
         const message = streamError instanceof Error ? streamError.message : "Assistant failed.";
         setError(message);
-        setMessages((current) => current.filter((item) => item.id !== assistantId));
+        setMessages((current) =>
+          current.map((item) =>
+            item.id === assistantId && wroteToEditor
+              ? { ...item, text: "Writing stopped. Review the partial draft in the editor." }
+              : item,
+          ).filter((item) => item.id !== assistantId || wroteToEditor),
+        );
       }
     } finally {
+      writingSession?.finish();
       abortRef.current = null;
       setIsStreaming(false);
       await queryClient.invalidateQueries({ queryKey: usageKey(projectId) });
@@ -190,7 +239,7 @@ export function AssistantShell({
             </p>
           </div>
           {usage ? (
-            <span className="font-mono text-[0.625rem] text-on-dark-soft">
+            <span className="font-mono text-xs text-on-dark-soft">
               {usage.totalTokens.toLocaleString()} / {usage.budget.toLocaleString()} tokens
             </span>
           ) : null}

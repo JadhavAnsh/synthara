@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const ASSISTANT_ACTIONS = [
+  "draft_document",
   "summarize_source",
   "propose_outline",
   "draft_section",
@@ -11,6 +12,7 @@ export const ASSISTANT_ACTIONS = [
 export type AssistantAction = (typeof ASSISTANT_ACTIONS)[number];
 
 export const ASSISTANT_ACTION_LABELS: Record<AssistantAction, string> = {
+  draft_document: "Draft document",
   summarize_source: "Summarize source",
   propose_outline: "Propose outline",
   draft_section: "Draft section",

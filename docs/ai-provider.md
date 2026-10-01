@@ -21,7 +21,7 @@ AI_DEVELOPMENT_TOKEN_BUDGET=1000000
 
 - `lib/ai/assistant.ts` streams grounded Gemini responses through the AI SDK.
 - `app/api/projects/[id]/assistant/route.ts` validates project ownership, selected sources, and supported actions.
-- The workspace supports source summary, outline, section drafting, selection rewriting, and citation insertion.
+- The workspace supports a complete source-grounded draft streamed into the editor, source summary, outline, section drafting, selection rewriting, and citation insertion.
 - Monthly per-project token usage is persisted and displayed against `AI_DEVELOPMENT_TOKEN_BUDGET`.
 - The key is read on the server only.
 

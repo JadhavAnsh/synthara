@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Editor } from "@tiptap/react";
+import { TextSelection } from "@tiptap/pm/state";
 
 import { ResearchEditor } from "@/components/editor/research-editor";
 import { AssistantShell } from "@/components/workspace/assistant-shell";
@@ -25,6 +26,7 @@ import {
   extractCommentsFromEditor,
   extractOutlineFromEditor,
 } from "@/lib/editor/document-utils";
+import { parseDraftBlockStart } from "@/lib/editor/word-stream";
 
 type WorkspacePageClientProps = {
   projectId: string;
@@ -115,6 +117,73 @@ export function WorkspacePageClient({ projectId }: WorkspacePageClientProps) {
     [createCitation, editor],
   );
 
+  const handleBeginWriting = useCallback(
+    (action: "draft_document" | "draft_section" | "rewrite_section") => {
+      if (!editor || editor.isDestroyed) {
+        throw new Error("The editor is not ready.");
+      }
+
+      const { from, to } = editor.state.selection;
+      if (action === "rewrite_section" && from === to) {
+        throw new Error("Select text in the editor before rewriting it.");
+      }
+
+      let insertionPosition: number | null = null;
+      editor.setEditable(false);
+
+      return {
+        append(text: string) {
+          if (editor.isDestroyed) return;
+          const pieces = action === "draft_document"
+            ? text.replace(/\r/g, "").split(/(\n)/)
+            : [text.replace(/\s+/g, " ")];
+
+          for (const part of pieces) {
+            if (part === "\n") {
+              insertionPosition = null;
+              continue;
+            }
+            if (!part) continue;
+
+            const transaction = editor.state.tr;
+            let chunk = part;
+            if (insertionPosition === null) {
+              if (action === "rewrite_section") {
+                transaction.insertText(chunk, from, to);
+                insertionPosition = from + chunk.length;
+              } else {
+                const parsed = action === "draft_document"
+                  ? parseDraftBlockStart(chunk)
+                  : { level: null, text: chunk };
+                const block = parsed.level
+                  ? editor.schema.nodes.heading.create({ level: parsed.level })
+                  : editor.schema.nodes.paragraph.create();
+                transaction.insert(transaction.doc.content.size, block);
+                insertionPosition = transaction.doc.content.size - 1;
+                chunk = parsed.text;
+                if (chunk) {
+                  transaction.insertText(chunk, insertionPosition);
+                  insertionPosition += chunk.length;
+                }
+              }
+            } else {
+              transaction.insertText(chunk, insertionPosition);
+              insertionPosition += chunk.length;
+            }
+            transaction
+              .setSelection(TextSelection.create(transaction.doc, insertionPosition))
+              .scrollIntoView();
+            editor.view.dispatch(transaction);
+          }
+        },
+        finish() {
+          if (!editor.isDestroyed) editor.setEditable(true);
+        },
+      };
+    },
+    [editor],
+  );
+
   if (projectLoading || documentLoading || sourcesLoading) {
     return <WorkspaceLoading />;
   }
@@ -166,6 +235,7 @@ export function WorkspacePageClient({ projectId }: WorkspacePageClientProps) {
         }
         editor={
           <ResearchEditor
+            key={projectId}
             projectId={projectId}
             title={project.title}
             initialContent={document?.editorState ?? null}
@@ -187,6 +257,7 @@ export function WorkspacePageClient({ projectId }: WorkspacePageClientProps) {
         }
         assistant={
           <AssistantShell
+            key={projectId}
             projectId={projectId}
             selectedSources={selectedSources}
             getEditorSelection={() => {
@@ -197,6 +268,7 @@ export function WorkspacePageClient({ projectId }: WorkspacePageClientProps) {
               return from === to ? "" : editor.state.doc.textBetween(from, to, "\n");
             }}
             onInsertCitation={handleAssistantCitation}
+            onBeginWriting={handleBeginWriting}
           />
         }
       />

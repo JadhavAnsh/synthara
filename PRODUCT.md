@@ -24,7 +24,7 @@ Synthara's differentiator is a **unified research workspace** where source disco
 
 ## Operating Context
 
-Users work in a browser-based SaaS environment. Typical flow: submit a research question → search fans out to web, academic, and code sources → results normalize into a project source library → user selects sources → AI assistant answers or drafts from that context → document editor stores structured content and citation references → export renders Markdown, DOCX, or PDF with bibliography.
+Users work in a browser-based SaaS environment. The intended flow is: search for sources → select evidence → watch the AI write into the editor → review and revise the draft directly or with assistant help. Export with a bibliography follows that writing flow.
 
 Marketing pages, help articles, release notes, and research templates are intended to be editable through Contentstack. Development currently uses Google Gemini (free tier) for assistant experiments; production provider choice, billing, and limits remain open decisions.
 
@@ -39,11 +39,11 @@ Marketing pages, help articles, release notes, and research templates are intend
 - Export to Markdown, DOCX, and PDF.
 - Server-only integration boundaries for AI keys, CMS tokens, search keys, and database credentials.
 
-**Current foundation (implemented):** Next.js App Router shell, auth and accounts, MongoDB project/source schema, multi-channel search aggregation (web, academic, GitHub) with per-channel cache and retry queue, Gemini-backed AI API route (`app/api/ai/route.ts`), Contentstack Delivery API helper (`lib/cms/contentstack.ts`), planning documentation under `docs/`.
+**Current implementation:** Next.js App Router, auth, MongoDB projects and documents, multi-channel source search, selected-source context, Tiptap editor with citations, Gemini streaming through a project-scoped assistant route, and Contentstack landing content.
 
-**Planned but not yet built:** PostgreSQL with pgvector, Redis/BullMQ workers, Yjs or managed CRDT for collaborative editing, Tiptap/ProseMirror editor, citation chips, streaming assistant UI, export engine, beta billing.
+**Planned but not yet built:** Redis-backed jobs and collaboration coordination, WebSocket document collaboration for invited project members, export engine, and beta billing.
 
-**Explicitly undecided:** Production AI provider, deployment target, pricing/licensing, auth provider selection, privacy and data-retention policy for uploaded sources, realtime collaboration scope for MVP.
+**Explicitly undecided:** Production AI provider, deployment target, pricing/licensing, and privacy and data-retention policy for uploaded sources.
 
 ## Brand Commitments
 

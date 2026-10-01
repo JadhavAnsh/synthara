@@ -13,7 +13,7 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
-export const maxDuration = 40;
+export const maxDuration = 120;
 
 function errorResponse(error: unknown) {
   if (error instanceof OwnershipError) {
